@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -165,7 +167,7 @@ class PostProvider extends ChangeNotifier {
   addNewPost(
     String title,
     String content,
-    String? imagePath,
+    File? image,
     BuildContext context,
     String? state,
     String? city,
@@ -173,13 +175,13 @@ class PostProvider extends ChangeNotifier {
     bool success = false;
     try {
       // Show loading overlay
-      print("image path: $imagePath");
+      print("image path: ${image?.path}");
       // Create form data for Dio
       FormData formData = FormData.fromMap({
         'title': title,
         'content': content,
-        if (imagePath != null)
-          'image': imagePath,
+        if (image != null)
+          'image': await MultipartFile.fromFile(image.path, filename: image.path.split('/').last),
         if (state != null)
          'state': state,
         if (city != null)
@@ -227,9 +229,8 @@ class PostProvider extends ChangeNotifier {
     required String content,
     required bool isRemoveImage,
     required bool HaveUploadedImage,
-    required String? newImagePath,
+    required File? newImage,
   }) async {
-    print("edit post");
     try {
       FormData formData;
 
@@ -240,12 +241,11 @@ class PostProvider extends ChangeNotifier {
         '_method': 'PATCH',
         if (isRemoveImage == true && HaveUploadedImage == true)
           'remove_image': true,
-        if (newImagePath != null)
+        if (newImage != null)
           'image': 
-            newImagePath,
+            await MultipartFile.fromFile(newImage.path, filename: newImage.path.split('/').last),
 //new image selected
       });
-
       ApiResult result = await Apihelper.patch(
         ApiRequest(path: "/post/${post.id}", data: formData),
       );

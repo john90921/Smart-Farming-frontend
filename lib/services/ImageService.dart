@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fv2/dio/ImageDioHandle.dart';
 
 class ImageService {

@@ -12,8 +12,8 @@ class ImageDioHandle {
   ImageDioHandle._internal() {
     dio = Dio(
       BaseOptions(
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 10),
+        connectTimeout: const Duration(seconds: 2),
+        receiveTimeout: const Duration(seconds: 2),
       ),
     );
   }
@@ -31,7 +31,7 @@ class ImageDioHandle {
       'https://api.imgbb.com/1/upload',
       data: formData,
     );
-
+    print("ImgBB Response: ${response.data}");
     return response.data['data']['url'];
   }
 }

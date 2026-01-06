@@ -276,7 +276,6 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                           String? message =  await Provider.of<Userprovider>(context, listen: false)
                                 .editProfile(
                               name: newName!,
-                              description: newDescription!,
                               HaveUploadedImage: HaveUploadedImage,
                               newImagePath: imageUrl,
                               isRemoveImage: IsDeletedImage,

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fv2/dio/ImageDioHandle.dart';
 import 'package:fv2/models/Post.dart';
 import 'package:fv2/providers/PostProvider.dart';
 import 'package:fv2/services/ImageService.dart';
@@ -19,7 +20,7 @@ class PostFormPage extends StatefulWidget {
   final Post? post;
   final File? imageFile;
   const PostFormPage({super.key, this.post, this.imageFile});
-  
+
   @override
   State<PostFormPage> createState() => _PostFormPageState();
 }
@@ -36,33 +37,32 @@ class _PostFormPageState extends State<PostFormPage> {
   final TextEditingController cityController = TextEditingController();
   final TextEditingController stateController = TextEditingController();
 
-
   bool IsDeletedImage = false;
   bool HaveUploadedImage = false;
   Future<void> _getLocation() async {
     Location location = Location();
 
-bool serviceEnabled;
-PermissionStatus permissionGranted;
-LocationData locationData;
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
+    LocationData locationData;
 
-serviceEnabled = await location.serviceEnabled();
-if (!serviceEnabled) {
-  serviceEnabled = await location.requestService();
-  if (!serviceEnabled) {
-    return;
-  }
-}
+    serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        return;
+      }
+    }
 
-permissionGranted = await location.hasPermission();
-if (permissionGranted == PermissionStatus.denied) {
-  permissionGranted = await location.requestPermission();
-  if (permissionGranted != PermissionStatus.granted) {
-    return;
-  }
-}
+    permissionGranted = await location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
 
-locationData = await location.getLocation();
+    locationData = await location.getLocation();
 
     // Get coordinates
     final loc = await location.getLocation();
@@ -76,8 +76,11 @@ locationData = await location.getLocation();
 
     stateController.text = place.administrativeArea ?? '';
     cityController.text = place.locality ?? '';
-    print('City: ${place.locality}, State: ${place.administrativeArea}, Country: ${place.country}');
+    print(
+      'City: ${place.locality}, State: ${place.administrativeArea}, Country: ${place.country}',
+    );
   }
+
   @override
   void initState() {
     super.initState();
@@ -91,7 +94,7 @@ locationData = await location.getLocation();
       }
       oldImagePath = widget.post!.image;
     }
-    if(widget.imageFile != null) {
+    if (widget.imageFile != null) {
       newimage = widget.imageFile;
     }
   }
@@ -116,7 +119,6 @@ locationData = await location.getLocation();
     } on PlatformException catch (e) {
       print("Failed to pick image: $e");
     }
-
   }
 
   @override
@@ -153,15 +155,19 @@ locationData = await location.getLocation();
                           showCircularDialog(context);
                           if (_formKey.currentState!.validate()) {
                             _formKey.currentState!.save();
-                            print(
-                              "Title: $newtitle, Content: $newcontent, Image: $newimage.path",
-                            );
-                        String? result;
-                         String? imageUrl;
+                            String? result;
+                            String? imageUrl;
                             try {
-                            if (newimage != null && newimage!.path.isNotEmpty) {
-                             imageUrl = await ImageService.uploadImage(newimage!);
-                            }
+                              // if (newimage != null &&
+                              //     newimage!.path.isNotEmpty) {
+                              //   try {
+                              //     imageUrl = await ImageDioHandle.instance
+                              //         .uploadToImgBB(newimage!);
+                              //   } catch (e) {
+                              //     print("Image upload failed: $e");
+                              //   }
+                              // }
+                              // print("Image URL after upload: $imageUrl"); // Debug print
                               if (widget.post != null && context.mounted) {
                                 // editing existing post
                                 result =
@@ -172,9 +178,9 @@ locationData = await location.getLocation();
                                       post: widget.post!,
                                       title: newtitle!,
                                       content: newcontent!,
-                                      isRemoveImage : IsDeletedImage,
-                                      HaveUploadedImage : HaveUploadedImage,
-                                      newImagePath: imageUrl,
+                                      isRemoveImage: IsDeletedImage,
+                                      HaveUploadedImage: HaveUploadedImage,
+                                      newImage: newimage,
                                     );
                               } else {
                                 result =
@@ -184,13 +190,12 @@ locationData = await location.getLocation();
                                     ).addNewPost(
                                       newtitle!,
                                       newcontent!,
-                                      imageUrl,
+                                      newimage,
                                       context,
                                       state,
                                       city,
                                     );
                               }
-                             
                             } on Exception catch (e) {
                               result = e.toString();
                             }
@@ -198,9 +203,9 @@ locationData = await location.getLocation();
                             if (result != null) {
                               showMessage(context: context, message: result);
                             }
-                            
-                            if(context.mounted){
-                            Navigator.pop(context);
+
+                            if (context.mounted) {
+                              Navigator.pop(context);
                             }
                           }
                         },
@@ -316,7 +321,7 @@ locationData = await location.getLocation();
                             child: Center(
                               child:
                                   newimage != null ||
-                                       oldImagePath !=
+                                      oldImagePath !=
                                           null // check if image or the url is not null //if url have photo then show , if image file picked then show
                                   ? Stack(
                                       // show image with remove button
@@ -373,7 +378,7 @@ locationData = await location.getLocation();
                                 style: TextButton.styleFrom(
                                   backgroundColor: Color(0xFFE5E7EB),
                                 ),
-                                onPressed: (){
+                                onPressed: () {
                                   if (!mounted) return;
                                   pickImage(ImageSource.gallery, context);
                                 },
@@ -391,22 +396,20 @@ locationData = await location.getLocation();
             ),
           ),
         ),
-      
-      
       ),
     );
   }
 
-  FormImage(){
-    if(oldImagePath != null){ // check if old image of the post is not null then show image
-       return  CachedNetworkImage(
-                      imageUrl: oldImagePath!,
-                      fit: BoxFit.fill,
-                      placeholder: (context, url) =>
-                          const Center(child: CircularProgressIndicator()),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.broken_image),
-                    );
+  FormImage() {
+    if (oldImagePath != null) {
+      // check if old image of the post is not null then show image
+      return CachedNetworkImage(
+        imageUrl: oldImagePath!,
+        fit: BoxFit.fill,
+        placeholder: (context, url) =>
+            const Center(child: CircularProgressIndicator()),
+        errorWidget: (context, url, error) => const Icon(Icons.broken_image),
+      );
       // show image from url
       // return Image.network(
       //   widget.post!.image!,
@@ -416,13 +419,6 @@ locationData = await location.getLocation();
       //   errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
       // );
     }
-    return Image.file(
-      newimage!,
-      width: 200,
-      height: 200,
-      fit: BoxFit.cover,
-    );
+    return Image.file(newimage!, width: 200, height: 200, fit: BoxFit.cover);
   }
-
-  }
-
+}

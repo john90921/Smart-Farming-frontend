@@ -66,7 +66,6 @@ class Userprovider extends ChangeNotifier {
 
   Future<String?> editProfile(
    {required String name,
-    required String description, 
     required bool isRemoveImage,
     required bool HaveUploadedImage,
     required String? newImagePath,
@@ -79,7 +78,7 @@ class Userprovider extends ChangeNotifier {
       formData = FormData.fromMap({
         // if new image selected or delered image before, then send image field
         'name': name,
-        'description': description,
+        'description': "no",
         '_method': 'PATCH',
         if (isRemoveImage == true && HaveUploadedImage == true)
           'remove_image': true,
