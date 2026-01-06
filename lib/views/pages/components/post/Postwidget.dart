@@ -42,7 +42,7 @@ class _PostwidgetState extends State<Postwidget> {
 
   
     final postProvider = Provider.of<PostProvider>(context, listen: false);
-    final user_id = Provider.of<Userprovider>(context, listen: false).getUser.id;
+    final userId = Provider.of<Userprovider>(context, listen: false).getUser.id;
 
     // if(postProvider.getPost(widget.post_id) == null){ // if the post cannot found in post list 
     //   return FutureBuilder(
@@ -82,8 +82,8 @@ class _PostwidgetState extends State<Postwidget> {
                       : null,
                 ),
                 title: Text(post.ownerName), // User name
-                subtitle: Text("${post.getTimeAgo()} \n ${post.state?? ""} \n ${post.city??""}"), // Post time
-                trailing: user_id == post.owner_id ? IconButton(
+                subtitle: Text(post.getTimeAgo()), // Post time \n ${ post.state?? ""} \n ${post.city??""}
+                trailing: userId == post.owner_id ? IconButton(
                   icon: Icon(Icons.more_horiz),
                   onPressed: () {
                     {

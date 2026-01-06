@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fv2/api/ApiHelper.dart';
-import 'package:loader_overlay/loader_overlay.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key, required this.gmail});
@@ -112,9 +111,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         
               ElevatedButton(
                 onPressed: () async {
-                  context.loaderOverlay.show();
                   String? result = await resetPassword();
-                  context.loaderOverlay.hide();
         
                   if (result == null) {
                     ScaffoldMessenger.of(context)

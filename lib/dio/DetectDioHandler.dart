@@ -14,9 +14,6 @@
 // }
 
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:fv2/main.dart';
-import 'package:fv2/token/TokenManager.dart';
 class DetectDioHandler {
   final Dio dio;
   

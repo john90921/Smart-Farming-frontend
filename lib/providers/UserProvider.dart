@@ -9,7 +9,8 @@ class Userprovider extends ChangeNotifier {
   User _loginUser = User.initial();
   bool _disposed = false;
 
-void dispose() {
+@override
+  void dispose() {
     _disposed = true;
     super.dispose();
   }
@@ -109,6 +110,7 @@ void dispose() {
    on Exception catch (e) {
       // TODO
       print("error $e");
-    }}
+    }
+    return null;}
 
 }

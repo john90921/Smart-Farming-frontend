@@ -33,11 +33,10 @@ class PlantProvider extends ChangeNotifier {
   }) async{
       FormData formData = FormData.fromMap({
         'name': name,
-        if (imagePath != null)
-          'image': await MultipartFile.fromFile(
-            imagePath,
-            filename: 'image.jpg',
-          ),
+        'image': await MultipartFile.fromFile(
+          imagePath,
+          filename: 'image.jpg',
+        ),
       });
       try{
       ApiResult result = await Apihelper.post(

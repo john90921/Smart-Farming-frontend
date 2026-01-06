@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fv2/models/Comment.dart';
-import 'package:fv2/models/Reply.dart';
 
 class Post extends ChangeNotifier {
   final int id;

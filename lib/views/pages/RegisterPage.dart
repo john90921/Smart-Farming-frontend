@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fv2/api/ApiHelper.dart';
 import 'package:fv2/views/pages/LoginPage.dart';
-import 'package:fv2/views/pages/LoginPageTesting.dart';
-import 'package:fv2/views/pages/OtpScreen.dart';
-import 'package:loader_overlay/loader_overlay.dart';
+import 'package:fv2/views/pages/components/loading/showCircularDialog.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -26,7 +24,7 @@ class _RegisterPageState extends State<RegisterPage> {
       bool status = false;
       
       try {
-      
+      showCircularDialog(context);
         ApiResult result = await Apihelper.post(
           ApiRequest(
             path: "/register",
@@ -65,6 +63,7 @@ class _RegisterPageState extends State<RegisterPage> {
         ).showSnackBar(SnackBar(content: Text("Error during registration")));
         // TODO
       }
+      Navigator.pop(context); // close loading dialog
      if (status) {
   if (!mounted) return;
        // You can add navigation or API integration here
@@ -79,7 +78,7 @@ class _RegisterPageState extends State<RegisterPage> {
          context,
          MaterialPageRoute(
            builder: (context) =>
-               LoginPageTesting(),
+               LoginPage(),
          ),
        );
 }

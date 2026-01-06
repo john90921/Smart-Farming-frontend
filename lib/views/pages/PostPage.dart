@@ -65,7 +65,7 @@ class _PostPageState extends State<PostPage> {
     if (!_loaded) {
        final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>; // intial the ppst it
       postId = args['post_id'] as int;
-      highlightedCommentId = args['comment_id'] ?? null;
+      highlightedCommentId = args['comment_id'];
       post = Provider.of<PostProvider>(context, listen: false).getPost(postId); // get post from provider
 
       _loaded = true;

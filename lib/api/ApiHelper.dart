@@ -26,9 +26,9 @@ class ApiRequest{
 class Apihelper {
 
   static Future<ApiResult> post(ApiRequest apiRequest) async{
-     Dio _dio = DioHandler.instance.dio;
+     Dio dio = DioHandler.instance.dio;
     try{
-        final response = await _dio.post(apiRequest.path, data: apiRequest.data);
+        final response = await dio.post(apiRequest.path, data: apiRequest.data);
         final data = response.data;
         return ApiResult(status:data["status"], message: data["message"],data: data["data"]);
       }
@@ -62,9 +62,9 @@ class Apihelper {
       }
   }
   static Future<ApiResult> get(ApiRequest apiRequest) async{
-     Dio _dio = DioHandler.instance.dio;
+     Dio dio = DioHandler.instance.dio;
       try{
-        final response = await _dio.get(apiRequest.path, queryParameters: apiRequest.data);
+        final response = await dio.get(apiRequest.path, queryParameters: apiRequest.data);
         final data = response.data;
         return ApiResult(status:data["status"], message: data["message"],data: data["data"]); 
       }
@@ -78,9 +78,9 @@ class Apihelper {
       }
   }
    static Future<ApiResult> delete(ApiRequest apiRequest) async{
-     Dio _dio = DioHandler.instance.dio;
+     Dio dio = DioHandler.instance.dio;
       try{
-        final response = await _dio.delete(apiRequest.path);
+        final response = await dio.delete(apiRequest.path);
         final data = response.data;
         return ApiResult(status:data["status"], message: data["message"],data: data["data"]); 
       }
@@ -95,18 +95,18 @@ class Apihelper {
   }
 
    static Future<ApiResult> patch(ApiRequest apiRequest)async{
-    Dio _dio = DioHandler.instance.dio;
+    Dio dio = DioHandler.instance.dio;
     try{
       final Response response;
       
       
     if (apiRequest.data is FormData) {
-      response = await _dio.post(
+      response = await dio.post(
         apiRequest.path,
         data: apiRequest.data,
       );
     } else {
-      response = await _dio.patch(
+      response = await dio.patch(
         apiRequest.path,
         data: apiRequest.data,
       );

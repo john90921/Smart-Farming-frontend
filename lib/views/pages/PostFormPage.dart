@@ -3,16 +3,18 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fv2/dio/ImageDioHandle.dart';
 import 'package:fv2/models/Post.dart';
 import 'package:fv2/providers/PostProvider.dart';
+import 'package:fv2/services/ImageService.dart';
 import 'package:fv2/utils/message_helper.dart';
 import 'package:fv2/views/pages/components/form/CustomFormField.dart';
+import 'package:fv2/views/pages/components/loading/showCircularDialog.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:location/location.dart';
 import 'package:geocoding/geocoding.dart' hide Location;
+
 class PostFormPage extends StatefulWidget {
   final Post? post;
   final File? imageFile;
@@ -92,7 +94,6 @@ locationData = await location.getLocation();
     if(widget.imageFile != null) {
       newimage = widget.imageFile;
     }
-    super.initState();
   }
 
   @override
@@ -110,21 +111,14 @@ locationData = await location.getLocation();
       final imageTemporary = File(image.path);
       setState(() {
         oldImagePath = null;
-        this.newimage = imageTemporary;
+        newimage = imageTemporary;
       });
     } on PlatformException catch (e) {
       print("Failed to pick image: $e");
     }
 
   }
-Future<String?> uploadImage(File file) async {
-  try {
-    final url = await ImageDioHandle.instance.uploadToImgBB(file);
-    return url;
-  } catch (e) {
-    throw Exception('Image upload failed: $e');
-  }
-}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -156,17 +150,17 @@ Future<String?> uploadImage(File file) async {
                           foregroundColor: Colors.white,
                         ),
                         onPressed: () async {
-                 
+                          showCircularDialog(context);
                           if (_formKey.currentState!.validate()) {
                             _formKey.currentState!.save();
                             print(
                               "Title: $newtitle, Content: $newcontent, Image: $newimage.path",
                             );
-                            String? result;
+                        String? result;
                          String? imageUrl;
                             try {
                             if (newimage != null && newimage!.path.isNotEmpty) {
-                             imageUrl = await uploadImage(newimage!);
+                             imageUrl = await ImageService.uploadImage(newimage!);
                             }
                               if (widget.post != null && context.mounted) {
                                 // editing existing post
@@ -200,6 +194,7 @@ Future<String?> uploadImage(File file) async {
                             } on Exception catch (e) {
                               result = e.toString();
                             }
+                            Navigator.pop(context); // close loading dialog
                             if (result != null) {
                               showMessage(context: context, message: result);
                             }
@@ -225,6 +220,7 @@ Future<String?> uploadImage(File file) async {
                     },
                     onSaved: (value) {
                       newtitle = value;
+                      return null;
                     },
                   ),
                   CustomFormField(
@@ -239,60 +235,61 @@ Future<String?> uploadImage(File file) async {
                     },
                     onSaved: (value) {
                       newcontent = value;
-                    },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton.icon(
-                      onPressed: () async {
-                        await _getLocation();
-                      },
-                              icon: const Icon(Icons.location_on),
-                              label: const Text(
-                                'Get My Location',
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            ),
-                  ),
-                  TextFormField(
-                    enabled: false,
-                    controller: stateController,
-                    decoration: InputDecoration(
-                      labelText: "State",
-                      border: const OutlineInputBorder(),
-                    ),
-                    minLines: 1,
-                    validator: (value) {
                       return null;
                     },
-                    onSaved: (value) {
-                      state = value;
-                    },
                   ),
-                  const SizedBox(height: 10)
-                  ,
-                   TextFormField(
-                    enabled: false,
-                    controller: cityController,
-                    decoration: InputDecoration(
-                      labelText: "City",
-                      border: const OutlineInputBorder(),
-                    ),
-                    minLines: 1,
-                      validator: (value) {
-                      return null;
-                    },
-                    onSaved: (value) {
-                      city = value;
-                    },
-                  ),
-                  const SizedBox(height: 10),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(8.0),
+                  //   child: ElevatedButton.icon(
+                  //     onPressed: () async {
+                  //       await _getLocation();
+                  //     },
+                  //             icon: const Icon(Icons.location_on),
+                  //             label: const Text(
+                  //               'Get My Location',
+                  //               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  //             ),
+                  //             style: ElevatedButton.styleFrom(
+                  //               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                  //               shape: RoundedRectangleBorder(
+                  //                 borderRadius: BorderRadius.circular(12),
+                  //               ),
+                  //             ),
+                  //           ),
+                  // ),
+                  // TextFormField(
+                  //   enabled: false,
+                  //   controller: stateController,
+                  //   decoration: InputDecoration(
+                  //     labelText: "State",
+                  //     border: const OutlineInputBorder(),
+                  //   ),
+                  //   minLines: 1,
+                  //   validator: (value) {
+                  //     return null;
+                  //   },
+                  //   onSaved: (value) {
+                  //     state = value;
+                  //   },
+                  // ),
+                  // const SizedBox(height: 10)
+                  // ,
+                  //  TextFormField(
+                  //   enabled: false,
+                  //   controller: cityController,
+                  //   decoration: InputDecoration(
+                  //     labelText: "City",
+                  //     border: const OutlineInputBorder(),
+                  //   ),
+                  //   minLines: 1,
+                  //     validator: (value) {
+                  //     return null;
+                  //   },
+                  //   onSaved: (value) {
+                  //     city = value;
+                  //   },
+                  // ),
+                  // const SizedBox(height: 10),
                   Container(
                     //image display  and  picker container
                     decoration: BoxDecoration(

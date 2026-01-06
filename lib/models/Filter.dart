@@ -10,10 +10,10 @@ class Filter {
   String? sortBy;
   String? searhInput;
   Filter.initial({
-    this.userId = null,
+    this.userId,
     this.date = "month",
     this.sortBy="popular",
-    this.searhInput = null,
+    this.searhInput,
   });
   Filter.owner({
     required this.userId,
@@ -37,7 +37,7 @@ class Filter {
   }
 
   void setSearchInput(String searchInput){
-    this.searhInput = searchInput;
+    searhInput = searchInput;
   }
   
 

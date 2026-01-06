@@ -14,8 +14,6 @@
 // }
 
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:fv2/main.dart';
 import 'package:fv2/token/TokenManager.dart';
 class DioHandler {
   final Dio dio;
@@ -23,7 +21,7 @@ class DioHandler {
   
   DioHandler._internal()
       : dio = Dio(BaseOptions(
-          baseUrl: "https://backend-production-1a5a.up.railway.app/api/v1", // change to your API
+          baseUrl: "http://10.65.111.17:8000/api/v1", // change to your API
           connectTimeout: const Duration(seconds: 10),
           receiveTimeout: const Duration(seconds: 10),
           headers: {

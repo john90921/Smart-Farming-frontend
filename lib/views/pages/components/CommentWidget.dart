@@ -1,12 +1,10 @@
 
 import 'package:flutter/material.dart';
-import 'package:fv2/models/Comment.dart';
 import 'package:fv2/models/Reply.dart';
 import 'package:fv2/providers/CommentProvider.dart';
 import 'package:fv2/providers/ReplyProvider.dart';
 import 'package:fv2/views/pages/components/CommentContentWidget.dart';
 import 'package:fv2/views/pages/components/ReplyWidget.dart';
-import 'package:fv2/views/pages/components/ShowReplyBottomSheet.dart';
 import 'package:provider/provider.dart';
 
 class CommentWidget extends StatefulWidget {

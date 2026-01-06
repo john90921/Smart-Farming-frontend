@@ -100,6 +100,7 @@ class PostProvider extends ChangeNotifier {
     } catch (e) {
       return ("error");
     }
+    return null;
   }
 
   addCommentsCount(int postId) {
@@ -172,7 +173,7 @@ class PostProvider extends ChangeNotifier {
     bool success = false;
     try {
       // Show loading overlay
-      print("image path: ${imagePath}");
+      print("image path: $imagePath");
       // Create form data for Dio
       FormData formData = FormData.fromMap({
         'title': title,
@@ -185,7 +186,7 @@ class PostProvider extends ChangeNotifier {
           'city': city,
       });
       print("form data: $formData");
-      print("Sending new post to API ... ${formData}");
+      print("Sending new post to API ... $formData");
 
       // Send POST request
       ApiResult result = await Apihelper.post(
@@ -270,6 +271,7 @@ class PostProvider extends ChangeNotifier {
       // TODO
       print("error $e");
     }
+    return null;
   }
  Future<String> reportPost(int id, BuildContext context) async {
     // id post
@@ -369,7 +371,7 @@ class PostProvider extends ChangeNotifier {
           'page': pages,
           'date': date,
           'sortBy': sortBy,
-          if(searchInput != "" && searchInput != null) 
+          if(searchInput != "") 
           'searchInput': searchInput,
           if(userId != null)
           'userId': userId,
@@ -431,7 +433,7 @@ class PostProvider extends ChangeNotifier {
       data: {
           'date': date,
           'sortBy': sortBy,
-          if(searchInput != "" && searchInput != null) 
+          if(searchInput != "") 
           'searchInput': searchInput,
           if(userId != null)
           'userId': userId,

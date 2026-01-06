@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fv2/models/Post.dart';
-import 'package:fv2/providers/PostProvider.dart';
-import 'package:fv2/views/pages/components/ConfirmDialog.dart';
-import 'package:fv2/views/pages/components/ShowReplyBottomSheet.dart';
 
 Future<void> showReportsOptionSheet({
   required BuildContext context,
@@ -18,7 +14,7 @@ Future<void> showReportsOptionSheet({
       context: context,
       builder: (context) {
         return Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 60.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

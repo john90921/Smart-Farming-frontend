@@ -57,26 +57,53 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 16),
           
                 // Name
-                Text(
-                  user.name,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-              ),
-          
-                const SizedBox(height: 8),
-          
-                // Description
-                Text(
-                  user.description ?? 'no description',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
-                  ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Name: ${user.name}",
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.normal,
+                      ),
+                                  ),
+                              
+                    const SizedBox(height: 8),
+                    
+                    // Description
+                    Text(
+                      "Worker ID: 4450",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        
+                      ),
+                    ),
+                    Text(
+                      "Department: Planting",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 15,
+                      ),
+                    ),
+                    Text(
+                      "Email: sorvictor90@gmail.com",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 15,
+                      ),
+                    ),
+                    Text(
+                      "Phone Number :01155566628",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 15,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                 ),
-                const SizedBox(height: 16),
                 // Edit Profile Button
                 ElevatedButton(
                   onPressed: () {

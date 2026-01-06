@@ -96,6 +96,7 @@ class CommentProvider extends ChangeNotifier {
       print("error $e");
       return ("error");
     }
+    return null;
   }
 
   Future<void> fetchComments(int postId) async {
@@ -153,8 +154,8 @@ class CommentProvider extends ChangeNotifier {
       );
 
       if (result.status == true) {
-        Comment comment_data = parseSingleComments(result.data as Map<String, dynamic>);
-        _comments.insert(0, comment_data);
+        Comment commentData = parseSingleComments(result.data as Map<String, dynamic>);
+        _comments.insert(0, commentData);
         isAddingComment = false;
         notifyListeners();
         _postProvider.addCommentsCount(postId);

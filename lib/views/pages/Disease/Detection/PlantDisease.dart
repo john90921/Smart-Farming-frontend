@@ -6,8 +6,8 @@ import 'package:fv2/dio/DetectDioHandler.dart';
 import 'package:fv2/models/Plant.dart';
 import 'package:fv2/models/Post.dart';
 import 'package:fv2/utils/message_helper.dart';
-import 'package:fv2/views/pages/Disease/DiseaseDetailPage.dart';
-import 'package:fv2/views/pages/Disease/Solution.dart';
+import 'package:fv2/views/pages/Disease/Detection/DiseaseDetailPage.dart';
+import 'package:fv2/views/pages/Disease/Detection/Solution.dart';
 import 'package:fv2/views/pages/PostFormPage.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 
@@ -55,7 +55,7 @@ class _PlantDiseaseState extends State<PlantDisease> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
-          child: Container(
+          child: SizedBox(
             height: MediaQuery.of(context).size.height,
             width: double.infinity,
             child: Column(
@@ -98,6 +98,30 @@ class _PlantDiseaseState extends State<PlantDisease> {
                     ],
                   ),
                 ),
+                Container(
+                  // container confidence score and plant name
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ListTile(
+                      trailing: Text(
+                        "30/5/2025 10:00 am",
+                      ), // Confidence score
+                      title: Text(
+                        "Created Time", // Plant name
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      // subtitle: Text("Plant : ${widget.name}"),
+                    ),
+                  ),
+                ),
+                
                 const SizedBox(height: 20),
                 Container(
                   // container confidence score and plant name
@@ -109,24 +133,46 @@ class _PlantDiseaseState extends State<PlantDisease> {
                     padding: const EdgeInsets.all(8.0),
                     child: ListTile(
                       trailing: Text(
-                        "${widget.confidence.toStringAsFixed(2)} % confidence",
+                        "0.89 % confidence",
                       ), // Confidence score
                       title: Text(
-                        "Disease : ${widget.disease}", // Plant name
+                        "Disease :Sternochetus mangiferae", // Plant name
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      subtitle: Text("Plant : ${widget.name}"),
+                      // subtitle: Text("Plant : ${widget.name}"),
                     ),
                   ),
                 ),
+                
                 SizedBox(height: 20),
+                  Container(
+                  // container confidence score and plant name
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ListTile( // Confidence score
+                      title: Text(
+                        "Symptoms", // Plant name
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Text('\n\nAnthracnose manifests\n\nSunken lesions on the stems \n\nPink or orange spore mass'),
+                      // subtitle: Text("Plant : ${widget.name}"),
+                    ),
+                  ),
+                ),
                 if ((widget.disease == "Unknown Disease" || widget.disease == "Unknown")) ...[
                   ElevatedButton(
                     onPressed: () async {
-                      final _dio = DetectDioHandler.instance.dio;
+                      final dio = DetectDioHandler.instance.dio;
                       String plant = widget.name;
                       String disease = widget.disease;
                       double confidence = widget.confidence;
@@ -135,7 +181,7 @@ class _PlantDiseaseState extends State<PlantDisease> {
                           context.loaderOverlay.show();
                       try {
                     
-                        final solutionResponse = await _dio.post(
+                        final solutionResponse = await dio.post(
                           '/getremedy',
                           queryParameters: {
                             'crop': plant,

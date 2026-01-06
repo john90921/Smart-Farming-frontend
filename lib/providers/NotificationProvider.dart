@@ -5,7 +5,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:dio/dio.dart';
 
 class NotificationProvider extends ChangeNotifier {
-  List<dynamic> _notifications = [];
+  final List<dynamic> _notifications = [];
   bool isLoading = false;
   List<dynamic> get notifications => _notifications;
   int unread_count = 0;

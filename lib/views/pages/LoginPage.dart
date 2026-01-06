@@ -1,213 +1,284 @@
-// import 'package:dio/dio.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_login/flutter_login.dart';
-// import 'package:fv2/api/ApiHelper.dart';
-// import 'package:fv2/dio/DioHandler.dart';
-// import 'package:fv2/providers/UserProvider.dart';
-// import 'package:fv2/token/TokenManager.dart';
-// import 'package:fv2/views/WidgetTree.dart';
-// import 'package:fv2/views/pages/HomePage.dart';
-// import 'package:fv2/views/pages/OtpScreen.dart';
-// import 'package:loader_overlay/loader_overlay.dart';
-// import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_login/flutter_login.dart';
+import 'package:fv2/api/ApiHelper.dart';
+import 'package:fv2/dio/DioHandler.dart';
+import 'package:fv2/providers/UserProvider.dart';
+import 'package:fv2/token/TokenManager.dart';
+import 'package:fv2/views/WidgetTree.dart';
+import 'package:fv2/views/pages/HomePage.dart';
+import 'package:fv2/views/pages/OtpScreen.dart';
+import 'package:fv2/views/pages/components/loading/showCircularDialog.dart';
+import 'package:provider/provider.dart';
 
-// const users = {'dribbble@gmail.com': '12345', 'hunter@gmail.com': 'hunter'};
+//sorvictor90@gmail.com
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
-// class LoginPage extends StatelessWidget {
-//   const LoginPage({super.key});
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
 
-//   Duration get loginTime => const Duration(milliseconds: 2250);
+class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
-//   Future<String?> _authUser(LoginData data, BuildContext context) async {
-//     try {
-//   ApiResult result = await Apihelper.post(
-//     ApiRequest(
-//       path: "/login",
-//       data: {"email": data.name, "password": data.password},
-//     ),
-//   );
-  
-//   if (result.status == true) {
-//     final token = result.data["token"];
-//     if (token != null) {
-//       await TokenManager.instance.saveAccessToken(token); // login success
-//     }
-//     final saveToken = await TokenManager.instance.loadAccessToken();
-//     print("login successfull, {$saveToken}");
-//     print("user data: ${result.data}");
-//     Map<String, dynamic> user = result.data["user"] as Map<String, dynamic>;
-//     Provider.of<Userprovider>(context, listen: false).login(user);
-//     return null;
-//   } else {
-//     print("Login failed: ${result.message}");
-//     return "error : ${result.message}";
-//   }
-// } catch (e) {
-//   print("Login error: $e");
-//   // TODO
-// }
-//     // final Dio _dio = DioHandler.instance.dio;
+  Future<String?> _authUser(BuildContext context) async {
+    bool statusLogin = false;
+    String message = "";
 
-//     // try {
-//     //   final response = await _dio.post(
-//     //     "/login",
-//     //     data: {"email": data.name, "password": data.password},
-//     //   );
-//     //   if (response.data["status"] == true) {
-//     //     final token = response.data['token'];
-//     //     if (token != null) {
-//     //       await TokenManager.instance.saveAccessToken(token); // login success
-//     //     }
-//     //     return null;
-//     //     // final saveToken = await TokenManager.instance.loadAccessToken();
-//     //     // print("login successfull, {$saveToken}");
-//     //   }
-//     //   else{
-//     //     return "${response.data['message']}";
-//     //   }
-//     // } on DioException catch (e) {
-//     //   if (e.response != null) {
-//     //     print("Error: ${e.response?.statusCode} - ${e.response?.data}");
+    showCircularDialog(context);
+    if (_formKey.currentState!.validate()) {
+      try {
+        ApiResult result = await Apihelper.post(
+          ApiRequest(
+            path: "/login",
+            data: {
+              "email": _emailController.text,
+              "password": _passwordController.text,
+            },
+          ),
+        );
 
-//     //     return "Error: ${e.response?.statusCode} - ${e.response?.data}";
-//     //   } else {
-//     //     print("Error: ${e.message}");
+        if (result.status == true) {
+          final token = result.data["token"];
+          if (token != null) {
+            await TokenManager.instance.saveAccessToken(token); // login success
+          }
 
-//     //     return "error";
-//     //   }
-//     // }
-//   }
+          final saveToken = await TokenManager.instance.loadAccessToken();
+          print("login successfull, {$saveToken}");
+          print("user data: ${result.data}");
+          
+          Map<String, dynamic> user =
+              result.data["user"] as Map<String, dynamic>;
+          Provider.of<Userprovider>(context, listen: false).login(user);
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text("login successfull")));
+          statusLogin = true;
+          message = "success";
+        } else {
+          if (result.message == "unverified") {
+            message = result.message;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Account unverified, redirecting to OTP screen"),
+              ),
+            );
+          } else {
+            print("login error: ${result.message}");
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text("invalid credentials")));
+          }
+        }
+      } catch (e) {
+        print("login error: $e");
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Login error: $e")));
+      }
+      Navigator.pop(context); // close loading dialog
+      if (statusLogin) {
+        if (!mounted) return null;
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const WidgetTree()),
+          (Route<dynamic> route) => false,
+        );
+      } else if (!statusLogin) {
+        if (message == "unverified") {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Account unverified, redirecting to OTP screen"),
+            ),
+          );
+          String gmail = _emailController.text;
+          if (context.mounted) {
+            Navigator.of(context).push(
+              PageRouteBuilder(
+                pageBuilder: (_, __, ___) =>
+                    OtpScreen(gmail: gmail, isForResetPassword: false),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          }
+        }
+      }
+    }
+    return null;
+  }
 
-//   // Future<String?> _recoverPassword(String name, BuildContext context) {
-//   //   Navigator.push(
-//   //     context,
-//   //     MaterialPageRoute(builder: (context) => const ResetPassword())
-//   //     );
+  // void _login() {
+  //   if (_formKey.currentState!.validate()) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text(
+  //           'Email: ${_emailController.text}, Password: ${_passwordController.text}',
+  //         ),
+  //       ),
+  //     );
+  //   }
+  // }
+  String selectedValue = "Staff";
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.person, size: 100, color: Colors.blueAccent),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Welcome",
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Sign in to continue",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  const SizedBox(height: 40),
 
-//   //   print(name);
+                  // Email Field
+                  Column(
+                    children: [
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: const InputDecoration(
+                          icon: Icon(Icons.email),
+                          labelText: "Email",
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Email is required';
+                          }
+                          final emailRegExp = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                          if (!emailRegExp.hasMatch(value)) {
+                            return 'Enter a valid email address';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
 
-//   //   return Future.delayed(loginTime).then((_) {
+                  // Password Field
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      icon: Icon(Icons.lock),
+                      labelText: "Password",
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Password is required';
+                      }
+                      return null;
+                    },
+                  ),
 
-//   //   });
-//   // }
+                  const SizedBox(height: 10),
 
-//   Future<String?> _signupUser(SignupData data, BuildContext context) async {
+                  // Forgot Password
+                  // Align(
+                  //   alignment: Alignment.centerRight,
+                  //   child: TextButton(
+                  //     onPressed: () {
+                  //       Navigator.pushNamed(context, '/requestResetPage');
+                  //     },
+                  //     child: const Text(
+                  //       "Forgot Password?",
+                  //       style: TextStyle(color: Colors.blueAccent),
+                  //     ),
+                  //   ),
+                  // ),
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: DropdownButton<String>(
+                      underline: const SizedBox(),
+                      isExpanded: true,
+                      value: selectedValue,
+                      items: ["Staff", "Manager"].map((String value) {
+                        return DropdownMenuItem(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedValue = newValue!;
+                        });
+                      },
+                    ),
+                  ),
 
-//   final email = data.name ?? '';
-//   final password = data.password ?? '';
-//   final fullname = data.additionalSignupData?['fullname'] ?? '';
-//   if (email.isEmpty || password.isEmpty || fullname.isEmpty) {
-//     return 'Please fill in all fields';
-//   }
-//   try {
-//     ApiResult result = await Apihelper.post(
-//     ApiRequest(
-//       path: "/user",
-//       data: {"name": fullname, "email": email, "password": password},
-//     ),
-//   );
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(value: false, onChanged: (value) {}),
+                          const Text("Remember me"),
+                        ],
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/requestResetPage');
+                        },
+                        child: const Text(
+                          "Forgot Password?",
+                          style: TextStyle(color: Colors.blueAccent),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  // Login Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _authUser(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: const Text("Login"),
+                    ),
+                  ),
 
-//     if (result.status == true) {
-//         final token = result.data["token"];
-//     if (token != null) {
-//       await TokenManager.instance.saveAccessToken(token); // login success
-//     }
-//     final saveToken = await TokenManager.instance.loadAccessToken();
-    
-//     print("login successfull, {$saveToken}");
-//     print("user data: ${result.data}");
-//     Map<String, dynamic> user = result.data["user"] as Map<String, dynamic>;
-//     Provider.of<Userprovider>(context, listen: false).login(user);
-//         return "success register"; // success
-//       } else {
-//         return('Registration failed: ${result.message}');
-//       }
-//     } catch (e) {
-//       return 'Registration error';
-//     }
-//   }
-
-//   Future<String?> _recoverPassword(String name) async {
-//     // optional, for forgot password
-//     return null;
-//   }
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Container(
-//         padding: const EdgeInsets.all(16.0),
-//         child: FlutterLogin(
-//           title: 'ECORP',
-//           onLogin: (data) => _authUser(data, context),
-//           onSignup: (data) => _signupUser(data, context),
-//           additionalSignupFields: [
-//     UserFormField(
-//       keyName: 'fullname',
-//       displayName: 'Full Name',
-//       icon: const Icon(Icons.person),
-//       fieldValidator: (value) {
-//         if (value == null || value.isEmpty) {
-//           return 'Full name required';
-//         }
-//         return null;
-//       },
-//     ),
-//   ],
-//           userType: LoginUserType.email, // force email mode
-
-//           onSubmitAnimationCompleted: () {
-//             if (context.mounted) {
-//               Navigator.of(context).pushReplacement(
-//                 MaterialPageRoute(
-//                   builder: (context) =>
-//                       const WidgetTree(),
-//                 ),
-//               );
-//             }
-//           },
-//           onRecoverPassword: (gmail) async {
-//             final Dio _dio = DioHandler.instance.dio;
-//             try {
-//               final response = await _dio.post(
-//                 "/forgetPassword",
-//                 data: {"email": gmail},
-//               );
-
-//               if (response.data['status'] == true) {
-//                 // WidgetsBinding.instance.addPostFrameCallback((_) {
-//                 //   Navigator.pushReplacement(
-//                 //     //direct to reset password
-
-//                 //     context,
-//                 //     MaterialPageRoute(
-//                 //       builder: (context) => LoaderOverlay(child: OtpScreen(gmail: gmail)),
-//                 //     ),
-//                 //   );
-//                 // });
-//                 if (context.mounted) {
-//                   Navigator.of(context).pushReplacement(
-//                     PageRouteBuilder(
-//                       pageBuilder: (_, __, ___) => OtpScreen(gmail: gmail, isForResetPassword: true),
-//                       transitionDuration: Duration.zero,
-//                       reverseTransitionDuration: Duration.zero,
-//                     ),
-//                   );
-//                 }
-//                 return null; // success
-//               } else if (response.data['status'] == false) {
-//                 return "Error: ${response.data['message']}";
-//               }
-//             } on DioException catch (e) {
-//               if (e.response != null) {
-//                 return ("Error: ${e.response?.statusCode} - ${e.response?.data}"); // ❌ 401, 404, 500, etc. → Dio throws → handled in catch (DioException).
-//               } else {
-//                 print("Error: ${e.message}"); //network error
-//                 return "error";
-//               }
-//             }
-//           },
-//         ),
-//       ),
-//     );
-//   }
-// }
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

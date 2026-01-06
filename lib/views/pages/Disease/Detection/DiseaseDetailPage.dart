@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fv2/views/pages/Disease/Solution.dart';
+import 'package:fv2/views/pages/Disease/Detection/Solution.dart';
 
 // Assume DiseaseModel, Symptom, Treatment, and TreatmentRecommendations classes are already defined
 

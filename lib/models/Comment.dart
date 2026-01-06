@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-import 'package:fv2/models/Reply.dart';
 
 class Comment extends ChangeNotifier {
   // Add your comment model properties and methods here

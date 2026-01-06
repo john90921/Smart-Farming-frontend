@@ -7,9 +7,9 @@ import 'package:fv2/token/TokenManager.dart';
 import 'package:fv2/views/WidgetTree.dart';
 import 'package:fv2/views/pages/CommunityPage.dart';
 import 'package:fv2/views/pages/RequestResetPage.dart';
-import 'package:fv2/views/pages/LoginPageTesting.dart';
+import 'package:fv2/views/pages/LoginPage.dart';
 import 'package:fv2/views/pages/NotificationPage.dart';
-import 'package:fv2/views/pages/Disease/PhotoGuide.dart';
+import 'package:fv2/views/pages/Disease/Detection/PhotoGuide.dart';
 import 'package:fv2/views/pages/PostFormPage.dart';
 import 'package:fv2/views/pages/HomePage.dart';
 import 'package:fv2/views/pages/PostPage.dart';
@@ -76,10 +76,11 @@ class MyApp extends StatelessWidget {
       ),
         initialRoute: firstStartRoute,
         routes: {
+          '/requestResetPage': (context) => RequestResetPage(),
           '/photoGuide': (context) => const Photoguide(),
           '/postPage':(context) => LoaderOverlay(child: PostPage()),
           '/postFormPage':(context) =>  LoaderOverlay(child: PostFormPage()),
-          '/login': (context) => LoaderOverlay(child: const LoginPageTesting()),
+          '/login': (context) => LoaderOverlay(child: const LoginPage()),
           '/NotificationPage': (context) => LoaderOverlay(child: NotificationPage()),
           '/postHistory': (context) => LoaderOverlay(child: PostHistoryPage()),
     //       '/home': (context) =>  ProfilePage(
@@ -87,7 +88,7 @@ class MyApp extends StatelessWidget {
     //   imageUrl: 'https://via.placeholder.com/150',
     //   description: 'Software developer passionate about Flutter and Laravel integration.',
     // ),
-      '/widgettree': (context) => const WidgetTree(),
+      '/widgettree': (context) => const WidgetTree(), 
       //     '/home': (context) => ChangeNotifierProvider(
       //   create: (_) => PostProvider(),
       //   child: LoaderOverlay(child:  Homepage()),

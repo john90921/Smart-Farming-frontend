@@ -1,15 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fv2/models/Post.dart';
-import 'package:fv2/providers/PostProvider.dart';
-import 'package:fv2/utils/message_helper.dart';
-import 'package:fv2/views/pages/Disease/PhotoScanConfirm.dart';
-import 'package:fv2/views/pages/components/form/CustomFormField.dart';
+import 'package:fv2/views/pages/Disease/Detection/PhotoScanConfirm.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:provider/provider.dart';
 import 'dart:io';
 
 class Photoguide extends StatefulWidget {

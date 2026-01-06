@@ -7,6 +7,7 @@ import 'package:fv2/dio/ImageDioHandle.dart';
 import 'package:fv2/providers/UserProvider.dart';
 import 'package:fv2/utils/message_helper.dart';
 import 'package:fv2/views/pages/components/form/CustomFormField.dart';
+import 'package:fv2/views/pages/components/loading/showCircularDialog.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
@@ -54,13 +55,14 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   }
    Future pickImage(ImageSource source, BuildContext context) async {
     // Use image_picker package to pick image from gallery or camera
+    
     try {
       final image = await ImagePicker().pickImage(source: source);
       if (image == null) return;
       final imageTemporary = File(image.path);
       setState(() {
         oldImagePath = null;
-        this.newimage = imageTemporary;
+        newimage = imageTemporary;
       });
     } on PlatformException catch (e) {
       print("Failed to pick image: $e");
@@ -189,7 +191,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     ),
                   ),               
                   CustomFormField(
+
                     controller: titleController,
+                  
                     hintText: "name",
                     minLines: 1,
                     validator: (value) {
@@ -200,17 +204,51 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     },
                     onSaved: (value) {
                       newName = value;
+                      return null;
                     },
                   ),
+                  // CustomFormField(
+                  //   controller: contentController,
+                  //   hintText: "description",
+                  //   minLines: 1,
+                  //   validator: (value) {
+                  //     return null;
+                  //   },
+                  //   onSaved: (value) {
+                  //     newDescription = value;
+                  //   },
+                  // ),
+                  // CustomFormField(
+                  //   controller: contentController,
+                  //   hintText: "Department",
+                  //   minLines: 1,
+                  //   validator: (value) {
+                  //     return null;
+                  //   },
+                  //   onSaved: (value) {
+                  //   },
+                  // ),
+                  //  CustomFormField(
+                  //   controller: contentController,
+                  //   hintText: "Gmail",
+                  //   minLines: 1,
+                  //   validator: (value) {
+                  //     return null;
+                  //   },
+                  //   onSaved: (value) {
+                  //   },
+                  // ),
+                  
                   CustomFormField(
                     controller: contentController,
-                    hintText: "description",
-                    minLines: 5,
+                    hintText: "Phone number",
+                    minLines: 1,
                     validator: (value) {
                       return null;
                     },
                     onSaved: (value) {
-                      newDescription = value;
+                      return null;
+                    
                     },
                   ),
                   Row(
@@ -223,7 +261,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                           foregroundColor: Colors.white,
                         ),
                         onPressed: () async {
-                 
+                            showCircularDialog(context);
                           if (_formKey.currentState!.validate()) {
                             _formKey.currentState!.save();
                             print("Name: $newName");
@@ -243,6 +281,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                               newImagePath: imageUrl,
                               isRemoveImage: IsDeletedImage,
                             );
+                            Navigator.pop(context); // close loading dialog
                             if(context.mounted && message != null){
                             showMessage(context: context, message: message);
                             }

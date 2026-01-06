@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fv2/providers/PostProvider.dart';
-import 'package:fv2/views/pages/Disease/PhotoScanConfirm.dart';
+import 'package:fv2/views/pages/Disease/Detection/PhotoScanConfirm.dart';
 import 'package:fv2/views/pages/components/post/PostListWidget.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -47,6 +47,7 @@ context.loaderOverlay.show();
       print("Failed to pick image: $e");
     }
   }
+  
   @override
   Widget build(BuildContext context) {
    PostProvider postProvider = Provider.of<PostProvider>(context,listen:false); // get post
@@ -114,6 +115,7 @@ context.loaderOverlay.show();
                     ),
                   ],
                 ),
+              
               ],
             ),
           ),

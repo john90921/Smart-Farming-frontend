@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fv2/views/pages/ResetPassword.dart';
-import 'package:loader_overlay/loader_overlay.dart';
+import 'package:fv2/views/pages/ResetPasswordPage.dart';
 import 'package:fv2/api/ApiHelper.dart';
 
 
@@ -148,9 +147,17 @@ class _OtpScreenState extends State<OtpScreen> {
             Center(
               child: ElevatedButton(
                 onPressed: () async {
-                  context.loaderOverlay.show();
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+          Navigator.pushReplacement(
+            //direct to reset password
+            context,
+            MaterialPageRoute(
+              builder: (context) => ResetPasswordPage(gmail: "sorvictor90@gmail.com"),
+            ),
+          );
+        }); //temporarily for testing
+                  
                   String? result = await _verifyOtp(context, widget.gmail);
-                  context.loaderOverlay.hide();
                   if (result == null) {
                     ScaffoldMessenger.of(context)
                       ..hideCurrentSnackBar()
@@ -180,11 +187,12 @@ class _OtpScreenState extends State<OtpScreen> {
                         );
                       }
                     });
-                  }else {
-                    ScaffoldMessenger.of(context)
-                      ..hideCurrentSnackBar()
-                      ..showSnackBar(SnackBar(content: Text(result)));
                   }
+                  // else {
+                  //   ScaffoldMessenger.of(context)
+                  //     ..hideCurrentSnackBar()
+                  //     ..showSnackBar(SnackBar(content: Text(result)));
+                  // }
                 },
                 child: const Text("Verify"),
               ),

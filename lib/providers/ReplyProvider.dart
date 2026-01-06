@@ -30,12 +30,12 @@ class ReplyProvider extends ChangeNotifier {
         .toList();
   }
 
-  LoadMoreRepliesData(int comment_id) async {
+  LoadMoreRepliesData(int commentId) async {
     try {
       pages++;
       notifyListeners();
       ApiResult result = await Apihelper.post(
-        ApiRequest(path: "/commentReplies", data: {"comment_id": comment_id}),
+        ApiRequest(path: "/commentReplies", data: {"comment_id": commentId}),
       );
       if (result.status == true) {
         if (result.data is List) {
@@ -58,12 +58,12 @@ class ReplyProvider extends ChangeNotifier {
     }
   }
 
-  Future<String?> fetchReplies(int comment_id) async {
+  Future<String?> fetchReplies(int commentId) async {
     try {
       isLoading = true;
       notifyListeners();
       ApiResult result = await Apihelper.post(
-        ApiRequest(path: "/commentReplies", data: {"comment_id": comment_id}),
+        ApiRequest(path: "/commentReplies", data: {"comment_id": commentId}),
       );
       if (result.status == true) {
         if (result.data is List) {
@@ -163,6 +163,7 @@ class ReplyProvider extends ChangeNotifier {
       print("error $e");
       return ("error");
     }
+    return null;
   }
 
   Future<String> deleteReply(

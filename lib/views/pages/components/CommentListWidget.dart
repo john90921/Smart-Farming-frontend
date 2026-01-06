@@ -55,7 +55,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
                       else if(commentProvider.isLoading){
                         return const Center(child: CircularProgressIndicator());
                       }
-                      else if(comments.length == 0) {
+                      else if(comments.isEmpty) {
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text("No comments"),
