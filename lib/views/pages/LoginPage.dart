@@ -54,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
           
           Map<String, dynamic> user =
               result.data["user"] as Map<String, dynamic>;
-          Provider.of<Userprovider>(context, listen: false).login(user);
+          Provider.of<UserProvider>(context, listen: false).login(user);
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text("login successfull")));

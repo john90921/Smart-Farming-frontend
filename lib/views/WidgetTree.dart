@@ -44,7 +44,7 @@ class _WidgetTreeState extends State<WidgetTree> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async{
       if (!mounted) return;
-      await Provider.of<Userprovider>(context, listen: false).setUserInfo();
+      await Provider.of<UserProvider>(context, listen: false).setUserInfo();
     await Provider.of<NotificationProvider>(
         context,
         listen: false,
@@ -67,7 +67,7 @@ class _WidgetTreeState extends State<WidgetTree> {
             icon: const Icon(Icons.logout),
             onPressed: () async {
               showCircularDialog(context);
-              bool logoutStatus = await Provider.of<Userprovider>(
+              bool logoutStatus = await Provider.of<UserProvider>(
                 context,
                 listen: false,
               ).logout(context);

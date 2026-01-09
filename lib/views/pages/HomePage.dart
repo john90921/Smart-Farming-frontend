@@ -121,22 +121,24 @@ context.loaderOverlay.show();
           ),
           const SizedBox(height: 20),
         
-          // Container(
-          //   width: double.infinity,
-          //   padding: const EdgeInsets.all(15.0),
-          //   decoration: BoxDecoration(
-          //     color: Colors.white,
-          //     borderRadius: BorderRadius.circular(8.0),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(15.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8.0),
       
-          //   ),
-          //   child: Row(children: [
-          //     Icon( Icons.people, color: Colors.blue, size: 30),
-          //     SizedBox(width: 10),
-          //     Text("User Management"),
-          //     Spacer(),
-          //     IconButton(onPressed: onPressed, icon: Icon(Icons.arrow_forward_ios))
-          //   ],),
-          // ),
+            ),
+            child: Row(children: [
+              Icon( Icons.people, color: Colors.blue, size: 30),
+              SizedBox(width: 10),
+              Text("User Management"),
+              Spacer(),
+              IconButton(onPressed: (){
+                Navigator.pushNamed(context, '/UserListPage');
+              }, icon: Icon(Icons.arrow_forward_ios))
+            ],),
+          ),
           SizedBox(height: 20),
           Text(
             "Week Community Feed",

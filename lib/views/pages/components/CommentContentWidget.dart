@@ -27,7 +27,7 @@ class CommentContentWidget extends StatelessWidget {
       context,
       listen: false,
     );
-    final userId = Provider.of<Userprovider>(context, listen: false).getUser.id;
+    final userId = Provider.of<UserProvider>(context, listen: false).getUser.id;
 
     return Selector<CommentProvider, Comment?>(
       selector: (_, commentProvdier) => commentProvdier.getComemnt(id),

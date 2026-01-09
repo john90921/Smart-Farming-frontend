@@ -42,7 +42,7 @@ class _PostwidgetState extends State<Postwidget> {
 
   
     final postProvider = Provider.of<PostProvider>(context, listen: false);
-    final userId = Provider.of<Userprovider>(context, listen: false).getUser.id;
+    final userId = Provider.of<UserProvider>(context, listen: false).getUser.id;
 
     // if(postProvider.getPost(widget.post_id) == null){ // if the post cannot found in post list 
     //   return FutureBuilder(

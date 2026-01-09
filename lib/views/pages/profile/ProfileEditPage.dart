@@ -15,14 +15,18 @@ import 'package:provider/provider.dart';
 class ProfileEditPage extends StatefulWidget {
   final String? name;
   final String? imageUrl;
-  final String? description;
+  final String? phone;
+  final String? email;
+  final int? profileId;
   
 
   const ProfileEditPage({
     super.key,
+    required this.profileId,
     required this.name,
     required this.imageUrl,
-    required this.description,
+    required this.phone,
+    required this.email,
   });
 
   @override
@@ -31,21 +35,51 @@ class ProfileEditPage extends StatefulWidget {
 
 class _ProfileEditPageState extends State<ProfileEditPage> {
   final _formKey = GlobalKey<FormState>();
-  String? newName, newDescription;
+  int? userID;
+  String? newName, newPhone,newEmail;
   File? newimage;
   String? oldImagePath;
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController contentController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   bool IsDeletedImage = false;
   bool HaveUploadedImage = false;
+  void submitForm() async{
+    if(_formKey.currentState!.validate()){
+      _formKey.currentState!.save();
+      
+        print("Name: $newName");
+        print("Phone: $newPhone");
+        print("Image: $newimage");
+        print("widget.profileId: ${widget.profileId}");
 
+        showCircularDialog(context);
+        final provider = Provider.of<UserProvider>(context, listen: false);
+        bool? status =  await  provider.editProfile(
+            profileId: widget.profileId,
+            name: newName,
+            phone: newPhone,
+            newimage: IsDeletedImage ? null : newimage,
+            isDeletedImage: IsDeletedImage,
+          );
+        Navigator.pop(context); // close the loading dialog
+        if(status == true){
+          showMessage(context: context, message: "Profile edited successfully", isError: false);
+          
+        }
+        else{
+          showMessage(context: context, message: "Failed to edit profile", isError: true);
+        }
+     
+        
+    }
+  }
     @override
   void initState() {
     super.initState();
    
       // check if editing existing post
-      titleController.text = widget.name ?? ''; // set title controller text
-      contentController.text = widget.description ?? ''; // set content controller text
+      _nameController.text = widget.name ?? ''; // set title controller text
+      _phoneController.text = widget.phone ?? ''; // set content controller text
       if (widget.imageUrl != null) {
         HaveUploadedImage = true;
       }
@@ -192,9 +226,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                   ),               
                   CustomFormField(
 
-                    controller: titleController,
+                    controller: _nameController,
                   
-                    hintText: "name",
+                    hintText: "Name",
                     minLines: 1,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -207,17 +241,19 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                       return null;
                     },
                   ),
-                  // CustomFormField(
-                  //   controller: contentController,
-                  //   hintText: "description",
-                  //   minLines: 1,
-                  //   validator: (value) {
-                  //     return null;
-                  //   },
-                  //   onSaved: (value) {
-                  //     newDescription = value;
-                  //   },
-                  // ),
+                
+                  CustomFormField(
+                    controller: _phoneController,
+                    hintText: "Phone",
+                    minLines: 1,
+                    validator: (value) {
+                      return null;
+                    },
+                    onSaved: (value) {
+                      newPhone = value;
+                      return null;
+                    },
+                  ),
                   // CustomFormField(
                   //   controller: contentController,
                   //   hintText: "Department",
@@ -228,29 +264,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                   //   onSaved: (value) {
                   //   },
                   // ),
-                  //  CustomFormField(
-                  //   controller: contentController,
-                  //   hintText: "Gmail",
-                  //   minLines: 1,
-                  //   validator: (value) {
-                  //     return null;
-                  //   },
-                  //   onSaved: (value) {
-                  //   },
-                  // ),
+     
                   
-                  CustomFormField(
-                    controller: contentController,
-                    hintText: "Phone number",
-                    minLines: 1,
-                    validator: (value) {
-                      return null;
-                    },
-                    onSaved: (value) {
-                      return null;
-                    
-                    },
-                  ),
+  
                   Row(
                     //button row
                     mainAxisAlignment: MainAxisAlignment.end, // align to right
@@ -261,33 +277,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                           foregroundColor: Colors.white,
                         ),
                         onPressed: () async {
-                            showCircularDialog(context);
-                          if (_formKey.currentState!.validate()) {
-                            _formKey.currentState!.save();
-                            print("Name: $newName");
-                            print("Description: $newDescription");
-                            print("Image: $newimage");
-                             String? imageUrl;
-       
-                            if (newimage != null && newimage!.path.isNotEmpty) {
-                             imageUrl= await uploadImage(newimage!);
-                            }
-                            // Call provider to update profile
-                          String? message =  await Provider.of<Userprovider>(context, listen: false)
-                                .editProfile(
-                              name: newName!,
-                              HaveUploadedImage: HaveUploadedImage,
-                              newImagePath: imageUrl,
-                              isRemoveImage: IsDeletedImage,
-                            );
-                            Navigator.pop(context); // close loading dialog
-                            if(context.mounted && message != null){
-                            showMessage(context: context, message: message);
-                            }
-                          
-                            Navigator.pop(context);
-                          
-                          }
+                          submitForm();
                         },
                         child: Text("Post"),
                       ),

@@ -9,8 +9,11 @@ void showMessage(
   bool isError = false,
 }) {
   // Remove any existing snackbar before showing a new one
-if(!context.mounted) return;
-  ScaffoldMessenger.of(context).showSnackBar(
+
+
+    WidgetsBinding.instance.addPostFrameCallback(
+    (_) {
+        ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Text(
         message?? (isError ? "An error occurred" : "Operation successful"),
@@ -25,4 +28,8 @@ if(!context.mounted) return;
       ),
     ),
   );
+
+    }
+    );
+
 }

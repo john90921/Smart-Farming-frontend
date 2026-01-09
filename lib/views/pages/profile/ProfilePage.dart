@@ -25,7 +25,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async{
       if (!mounted) return;
-      await Provider.of<Userprovider>(context, listen: false).setUserInfo();
+      await Provider.of<UserProvider>(context, listen: false).setUserInfo();
     });
     // TODO: implement initState
     super.initState();
@@ -38,7 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
         title: const Text('Profile'),
         centerTitle: true,
       ),
-      body: Consumer<Userprovider>(
+      body: Consumer<UserProvider>(
         builder: (context, userProvider, child) {
           User user = userProvider.getUser;
           return Padding(
@@ -73,7 +73,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     
                     // Description
                     Text(
-                      "Worker ID: 4450",
+                      "Worker ID: ${user.profile_id}",
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 15,
@@ -81,21 +81,14 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     Text(
-                      "Department: Planting",
+                      "Email: ${user.email}",
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      "Email: sorvictor90@gmail.com",
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 15,
-                      ),
-                    ),
-                    Text(
-                      "Phone Number :01155566628",
+                      "Phone Number : ${user.phone ?? ''}",
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 15,
@@ -111,9 +104,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => ProfileEditPage(
+                          profileId: user.profile_id,
                           name: user.name,
                           imageUrl: user.profile_Image,
-                          description: user.description,
+                          phone: user.phone,
+                          email: user.email,
                         ),
                       ),
                     );

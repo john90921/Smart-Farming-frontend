@@ -34,7 +34,7 @@ class _ReplyWidgetState extends State<ReplyWidget> {
   @override
   Widget build(BuildContext context) {
   final replyProvider = Provider.of<ReplyProvider>(context, listen: false);
-  final userId = Provider.of<Userprovider>(context, listen: false).getUser.id;
+  final userId = Provider.of<UserProvider>(context, listen: false).getUser.id;
 
     return Selector<ReplyProvider, Reply?>(
       selector: (_, replyProvider) => replyProvider.getReply(widget.id),

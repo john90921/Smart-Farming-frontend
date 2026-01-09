@@ -15,6 +15,9 @@ import 'package:fv2/views/pages/HomePage.dart';
 import 'package:fv2/views/pages/PostPage.dart';
 import 'package:fv2/views/pages/RegisterPage.dart';
 import 'package:fv2/views/pages/postHistory/PostHistoryPage.dart';
+import 'package:fv2/views/users/UserAddPage.dart';
+import 'package:fv2/views/users/UserEditPage.dart';
+import 'package:fv2/views/users/UserlIstPage.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
@@ -31,7 +34,7 @@ void main() async{
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => PostProvider()),
-        ChangeNotifierProvider(create: (context) => Userprovider()),
+        ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => CommentProvider()),
         ChangeNotifierProvider(create: (context) => NotificationProvider()),
         ChangeNotifierProxyProvider<PostProvider,CommentProvider>(
@@ -76,6 +79,8 @@ class MyApp extends StatelessWidget {
       ),
         initialRoute: firstStartRoute,
         routes: {
+          '/UserAddPage': (context) => const UserAddPage(),
+          '/UserListPage': (context) => const Userlistpage(),
           '/requestResetPage': (context) => RequestResetPage(),
           '/photoGuide': (context) => const Photoguide(),
           '/postPage':(context) => LoaderOverlay(child: PostPage()),

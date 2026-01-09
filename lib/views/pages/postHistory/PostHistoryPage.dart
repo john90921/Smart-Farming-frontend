@@ -23,7 +23,7 @@ class _PostHistoryPageState extends State<PostHistoryPage> {
   WidgetsBinding.instance.addPostFrameCallback((_) {
       // wait for widgets to be built then fetch
       try {
- final userId = Provider.of<Userprovider>(context, listen: false).getUser.id;
+ final userId = Provider.of<UserProvider>(context, listen: false).getUser.id;
  Provider.of<PostProvider>(context, listen: false).setCurrentFilter(Filter.owner(
     userId: userId,
     date: "year",
