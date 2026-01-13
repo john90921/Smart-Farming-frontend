@@ -24,20 +24,26 @@ class _UserAddPageState extends State<UserAddPage> {
     _nameController.dispose();
     super.dispose();
   }
-   void submitForm() async{
+
+  void submitForm() async {
     if (_formKey.currentState!.validate()) {
       final email = _emailController.text;
       final name = _nameController.text;
       final role = selectedRole;
 
       final provider = Provider.of<UserProvider>(context, listen: false);
-     bool? status =  await  provider.addUser(name, email, role);
-     _formKey.currentState!.reset();
-      if(status == true){
-        showMessage(context: context, message: "User added successfully", isError: false);
+      bool? status = await provider.addUser(name, email, role);
+      _formKey.currentState!.reset();
+      if (status == true) {
+        showMessage(
+          context: context,
+          message: "User added successfully",
+          isError: false,
+        );
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,17 +58,17 @@ class _UserAddPageState extends State<UserAddPage> {
             child: Form(
               key: _formKey,
               child: Column(
-
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                    const SizedBox(height: 20),
-                Selector<UserProvider, bool>(
-                  selector: (_, userProvider) => userProvider.isLoading,
-                  builder: (context, isLoading, child) {
-                    return isLoading ? CircularProgressIndicator() : SizedBox.shrink();
-                    
-                  },
-                ),
+                  const SizedBox(height: 20),
+                  Selector<UserProvider, bool>(
+                    selector: (_, userProvider) => userProvider.isLoading,
+                    builder: (context, isLoading, child) {
+                      return isLoading
+                          ? CircularProgressIndicator()
+                          : SizedBox.shrink();
+                    },
+                  ),
                   const Text(
                     "Register",
                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
@@ -104,21 +110,50 @@ class _UserAddPageState extends State<UserAddPage> {
                     },
                   ),
                   const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(
+                      labelText: "Department",
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Email is required';
+                      }
+                      final emailRegExp = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                      if (!emailRegExp.hasMatch(value)) {
+                        return 'Enter a valid email';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
 
-                  // Password Field
-                  DropdownButton<String>(
+                  // Role Field
+                  DropdownButtonFormField<String>(
                     value: selectedRole,
-                    hint: Text('Select Role'),
+                    decoration: const InputDecoration(
+                      labelText: "Role",
+                      border: OutlineInputBorder(),
+                    ),
+                    hint: const Text('Select Role'),
+                    isExpanded: true,
                     items: roles.map((String role) {
                       return DropdownMenuItem<String>(
                         value: role,
-                        child: Text(role),
+                        child: Text(role[0].toUpperCase() + role.substring(1)),
                       );
                     }).toList(),
                     onChanged: (String? newValue) {
                       setState(() {
                         selectedRole = newValue;
                       });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please select a role';
+                      }
+                      return null;
                     },
                   ),
 
@@ -136,26 +171,28 @@ class _UserAddPageState extends State<UserAddPage> {
                     ),
                   ),
 
-              
-                // Selector<UserProvider, bool>(
-                //   selector: (_, userProvider) => userProvider.isSuccess,
-                //   builder: (context, isSuccess, child) {
-                //     if(isSuccess){
-                //       showMessage(context: context, message: "User added successfully", isError: false);
-                //     }
-                //     return SizedBox.shrink();
-                //   },
-                // ),
-                Selector<UserProvider, String?>(
-                  selector: (_, userProvider) => userProvider.error,
-                  builder: (context, error, child) {
-                    if(error != null){
-                      showMessage(context: context, message: error, isError: true);
-                    }
-                    return SizedBox.shrink();
-                    
-                  },
-                ),
+                  // Selector<UserProvider, bool>(
+                  //   selector: (_, userProvider) => userProvider.isSuccess,
+                  //   builder: (context, isSuccess, child) {
+                  //     if(isSuccess){
+                  //       showMessage(context: context, message: "User added successfully", isError: false);
+                  //     }
+                  //     return SizedBox.shrink();
+                  //   },
+                  // ),
+                  Selector<UserProvider, String?>(
+                    selector: (_, userProvider) => userProvider.error,
+                    builder: (context, error, child) {
+                      if (error != null) {
+                        showMessage(
+                          context: context,
+                          message: error,
+                          isError: true,
+                        );
+                      }
+                      return SizedBox.shrink();
+                    },
+                  ),
 
                   // Back to Login
                 ],

@@ -37,7 +37,7 @@ Future<void> showOptionsSheet({
                 ListTile(
                   leading: const Icon(Icons.edit),
                   title: const Text('Edit'),
-                  subtitle: const Text('Edit your post'),
+                  subtitle: const Text('Edit'),
                   onTap: () {
                     Navigator.pop(context);
                     onEdit != null ? onEdit() : null;
@@ -46,7 +46,7 @@ Future<void> showOptionsSheet({
                 ListTile(
                   leading: const Icon(Icons.delete),
                   title: const Text('Delete'),
-                  subtitle: const Text('Delete your post'),
+                  subtitle: const Text('Delete'),
                   onTap: () async {
                     final bool? confirm = await confirmDialog(context);
           

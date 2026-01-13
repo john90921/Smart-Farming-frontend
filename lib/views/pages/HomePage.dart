@@ -69,17 +69,17 @@ context.loaderOverlay.show();
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Scan Plant disease',
+                  'Scan Dragon fruit disease',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
 
-                ),
+                  ),
                 const SizedBox(height: 10),
                 const Text(
-                  "Take or upload a photo to identify plant diseases instantly",
+                  "Take or upload a photo of dragon fruit stem to identify diseases instantly",
                   style: TextStyle(color: Colors.white),
                 ),
                 const SizedBox(height: 20),

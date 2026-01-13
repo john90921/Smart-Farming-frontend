@@ -54,6 +54,7 @@ dependencies:
 
 
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -80,7 +81,9 @@ flutter:
   assets:
     - assets/profile1.jpeg
     - assets/d3.jpg
-
+    - assets/model/dragon_fruit_model.tflite
+    - assets/labels/labels.txt
+    - assets/photoguide_example.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

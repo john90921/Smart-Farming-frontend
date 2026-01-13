@@ -55,7 +55,7 @@ class _UserEditPageState extends State<UserEditPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Register"),
+        title: const Text("Edit User"),
         leading: const BackButton(),
       ),
       body: Padding(
@@ -77,7 +77,7 @@ class _UserEditPageState extends State<UserEditPage> {
                   },
                 ),
                   const Text(
-                    "Register",
+                    "Edit User",
                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 40),
@@ -97,7 +97,24 @@ class _UserEditPageState extends State<UserEditPage> {
                     },
                   ),
                   const SizedBox(height: 20),
-
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      
+                      labelText: "Department",
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Email is required';
+                      }
+                      final emailRegExp = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                      if (!emailRegExp.hasMatch(value)) {
+                        return 'Enter a valid email';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
                   // Email Field
                   TextFormField(
                     controller: _emailController,
@@ -118,20 +135,31 @@ class _UserEditPageState extends State<UserEditPage> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Password Field
-                  DropdownButton<String>(
+                  // Select Role Field
+                  DropdownButtonFormField<String>(
                     value: selectedRole,
-                    hint: Text('Select Role'),
+                    decoration: const InputDecoration(
+                      labelText: "Role",
+                      border: OutlineInputBorder(),
+                    ),
+                    hint: const Text('Select Role'),
+                    isExpanded: true,
                     items: roles.map((String role) {
                       return DropdownMenuItem<String>(
                         value: role,
-                        child: Text(role),
+                        child: Text(role[0].toUpperCase() + role.substring(1)),
                       );
                     }).toList(),
                     onChanged: (String? newValue) {
                       setState(() {
                         selectedRole = newValue;
                       });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please select a role';
+                      }
+                      return null;
                     },
                   ),
 
@@ -145,7 +173,7 @@ class _UserEditPageState extends State<UserEditPage> {
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: const Text("Register"),
+                      child: const Text("Save Changes"),
                     ),
                   ),
 

@@ -52,6 +52,7 @@ class _PhotoguideState extends State<Photoguide> {
                Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+
                   ListTile(
                     leading: Text("1"),
                     title: Text('Position the Plant'),
@@ -69,6 +70,16 @@ class _PhotoguideState extends State<Photoguide> {
                     title: Text("Keep Steady"),
                     subtitle: Text('Hold your phone still to capture a clear image'),
                   ),
+                  Text(
+                    "example:",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 10),
+                  Image.asset(
+                    height: 200,
+                    'assets/photoguide_example.jpg'
+                    ),
+
                   Padding(
                     padding: EdgeInsets.all(16.0),
                     child: TextButton.icon(

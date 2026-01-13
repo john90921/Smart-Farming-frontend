@@ -70,10 +70,15 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                               
                     const SizedBox(height: 8),
-                    
+                    Text(
+                      "Role: Manager",
+                      style: const TextStyle(
+                        fontSize: 15,
+                      ),
+                    ),
                     // Description
                     Text(
-                      "Worker ID: ${user.profile_id}",
+                      "ID: ${user.profile_id}",
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 15,
