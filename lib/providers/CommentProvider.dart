@@ -9,8 +9,11 @@ import 'package:loader_overlay/loader_overlay.dart';
 
 class CommentProvider extends ChangeNotifier {
   bool isLoading = false;
+
   List<Comment> _comments = [];
   bool isAddingComment = false;
+  bool success = false;
+  bool error = false;
   late PostProvider _postProvider;
   int? highlightedCommentId;
   void initial(){
@@ -102,6 +105,8 @@ class CommentProvider extends ChangeNotifier {
   Future<void> fetchComments(int postId) async {
     try {
       isLoading = true;
+      success = false;
+      error = false;
       notifyListeners();
       _comments.clear();
       ApiResult result = await Apihelper.post(
@@ -128,13 +133,11 @@ class CommentProvider extends ChangeNotifier {
           _comments.insert(0, removedComment);
         } 
         }
-        } else {
-          print("error not a list");
-        }
-      } else {
-        print("error ${result.message}");
+        } 
       }
+
     } catch (e) {
+      error = true;
       print("error $e");
     } finally {
       isLoading = false;
@@ -145,6 +148,8 @@ class CommentProvider extends ChangeNotifier {
   addComments(int postId, String content, BuildContext context) async {
     try {
       isAddingComment = true;
+      // success = false;
+      // error = false;
       notifyListeners();
       ApiResult result = await Apihelper.post(
         ApiRequest(
@@ -156,18 +161,38 @@ class CommentProvider extends ChangeNotifier {
       if (result.status == true) {
         Comment commentData = parseSingleComments(result.data as Map<String, dynamic>);
         _comments.insert(0, commentData);
-        isAddingComment = false;
-        notifyListeners();
         _postProvider.addCommentsCount(postId);
-        return "success add comment";
-      } else {
-        print("error ${result.message}");
-        return ("error");
+        FocusScope.of(context).unfocus();
+        // success = true;
+         if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('comment add successfully'),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      } 
+      else{
+        // error = true;
+         if (!context.mounted) return;
+         ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error'),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
       }
     } catch (e) {
+      // error = true;
       print("error $e");
-      return("error");
+
     } 
+    finally {
+      isAddingComment = false;
+      notifyListeners();
+    }
   }
 
   Future<String> deleteComment(int id,int postId, BuildContext context) async {
@@ -210,12 +235,30 @@ class CommentProvider extends ChangeNotifier {
         ApiRequest(path: "/comment/$Id", data: {"content": content}),
       );
       if (result.status == true) {
+        
         final index = _comments.indexWhere((p) => p.id == Id);
         _comments[index].content = content;
         notifyListeners();
+        FocusScope.of(context).unfocus();
+        if (!context.mounted) return null;
+         ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Comment edited successfully'),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
         return null;
       } else {
         print("error ${result.message}");
+        if (!context.mounted) return "error";
+         ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Comment edited failed'),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
         return "error ";
       }
     } catch (e) {

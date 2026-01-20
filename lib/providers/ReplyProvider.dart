@@ -1,9 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fv2/api/ApiHelper.dart';
 import 'package:fv2/models/Reply.dart';
 import 'package:fv2/providers/CommentProvider.dart';
-import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
 class ReplyProvider extends ChangeNotifier {

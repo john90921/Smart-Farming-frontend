@@ -1,17 +1,18 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fv2/api/ApiHelper.dart';
 import 'package:fv2/models/Filter.dart';
 import 'package:fv2/models/Post.dart';
+import 'package:fv2/services/ImageService.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'dart:isolate';
 import 'dart:convert';
 
 class PostProvider extends ChangeNotifier {
-  
+  ImageService imageService = ImageService();
   bool isLoading = false;
   bool success = false;
   List<Post> _postList = [];
@@ -23,6 +24,12 @@ class PostProvider extends ChangeNotifier {
 
   int pages = 1;
   bool hasMore = true;
+
+  void setPostListEmpty(){
+    _postList = [];
+    notifyListeners();
+
+  }
   void setCurrentFilter(Filter? filter){
     _currentFilter = filter;
   }
@@ -42,6 +49,7 @@ class PostProvider extends ChangeNotifier {
 
   void setPostList(List<Post> value) {
     _postList = value;
+
   }
 
   void initialHomePage(){
@@ -54,6 +62,8 @@ class PostProvider extends ChangeNotifier {
     ); // reset filter to initial values
     _selectedPost = null; 
   }
+ 
+
 
   void initial() {
     hasMore= true;
@@ -176,6 +186,9 @@ class PostProvider extends ChangeNotifier {
     try {
       // Show loading overlay
       print("image path: ${image?.path}");
+      if (image != null){
+        image = await imageService.compressFile(image);
+      }
       // Create form data for Dio
       FormData formData = FormData.fromMap({
         'title': title,
@@ -233,7 +246,9 @@ class PostProvider extends ChangeNotifier {
   }) async {
     try {
       FormData formData;
-
+      if (newImage != null){
+        newImage = await imageService.compressFile(newImage);
+      }
       formData = FormData.fromMap({
         // if new image selected or delered image before, then send image field
         'title': title,

@@ -14,7 +14,9 @@ class UserAddPage extends StatefulWidget {
 class _UserAddPageState extends State<UserAddPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   String? selectedRole;
+  bool _isPasswordVisible = false;
   final List<String> roles = ['worker', 'manager'];
   final _formKey = GlobalKey<FormState>();
 
@@ -22,24 +24,26 @@ class _UserAddPageState extends State<UserAddPage> {
   void dispose() {
     _emailController.dispose();
     _nameController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
   void submitForm() async {
+    FocusScope.of(context).unfocus(); // Dismiss keyboard
     if (_formKey.currentState!.validate()) {
       final email = _emailController.text;
       final name = _nameController.text;
       final role = selectedRole;
-
+      final password = _passwordController.text;
       final provider = Provider.of<UserProvider>(context, listen: false);
-      bool? status = await provider.addUser(name, email, role);
-      _formKey.currentState!.reset();
-      if (status == true) {
-        showMessage(
-          context: context,
-          message: "User added successfully",
-          isError: false,
-        );
+      bool? success = await provider.addUser(name, email, role,password,context);
+      if (success == true) {
+        _nameController.clear(); //if success clear the form
+        _emailController.clear();
+        _passwordController.clear();
+        setState(() {
+          selectedRole = "worker";
+        });
       }
     }
   }
@@ -110,23 +114,23 @@ class _UserAddPageState extends State<UserAddPage> {
                     },
                   ),
                   const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: "Department",
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Email is required';
-                      }
-                      final emailRegExp = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-                      if (!emailRegExp.hasMatch(value)) {
-                        return 'Enter a valid email';
-                      }
-                      return null;
-                    },
-                  ),
+                  // TextFormField(
+                  //   controller: _emailController,
+                  //   decoration: const InputDecoration(
+                  //     labelText: "Department",
+                  //     border: OutlineInputBorder(),
+                  //   ),
+                  //   validator: (value) {
+                  //     if (value == null || value.isEmpty) {
+                  //       return 'Email is required';
+                  //     }
+                  //     final emailRegExp = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                  //     if (!emailRegExp.hasMatch(value)) {
+                  //       return 'Enter a valid email';
+                  //     }
+                  //     return null;
+                  //   },
+                  // ),
                   const SizedBox(height: 20),
 
                   // Role Field
@@ -158,7 +162,24 @@ class _UserAddPageState extends State<UserAddPage> {
                   ),
 
                   const SizedBox(height: 30),
+                 //password field 
+                  TextFormField(
 
+                    controller: _passwordController,
+
+                    decoration:  InputDecoration(
+                  labelText: 'Password',
+                  border: const OutlineInputBorder(),
+                  
+                ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Password is required';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 30),  
                   // Register Button
                   SizedBox(
                     width: double.infinity,

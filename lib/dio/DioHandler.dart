@@ -21,7 +21,7 @@ class DioHandler {
   
   DioHandler._internal()
       : dio = Dio(BaseOptions(
-          baseUrl: "http://10.65.107.44:8000/api/v1", // change to your API
+          baseUrl: "https://v3-gkin.onrender.com/api/v1", // change to your API
           connectTimeout: const Duration(seconds: 10),
           receiveTimeout: const Duration(seconds: 10),
           headers: {

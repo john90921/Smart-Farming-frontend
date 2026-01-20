@@ -11,6 +11,7 @@ Future<void> showOptionsSheet({
   // required Future Function() onEdit
 }) async {
   try {
+    FocusScope.of(context).unfocus();
     await showModalBottomSheet(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       context: context,
@@ -48,7 +49,7 @@ Future<void> showOptionsSheet({
                   title: const Text('Delete'),
                   subtitle: const Text('Delete'),
                   onTap: () async {
-                    final bool? confirm = await confirmDialog(context);
+                    final bool? confirm = await confirmDialog(context, 'Are you sure you want to delete?');
           
                     if (confirm == false) {
                       return;

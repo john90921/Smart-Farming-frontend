@@ -1,14 +1,33 @@
 import 'dart:io';
 
-import 'package:fv2/dio/ImageDioHandle.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+
 
 class ImageService {
-  Future<String?> uploadImage(File file) async {
-  try {
-    final url = await ImageDioHandle.instance.uploadToImgBB(file);
-    return url;
-  } catch (e) {
-    throw Exception('Image upload failed: $e');
+  Future<File?> compressFile(File file) async {
+  
+  try{
+  final filePath = file.absolute.path;
+
+  // Create output file path
+  // eg:- "Volume/VM/abcd_out.jpeg"
+  final lastIndex = filePath.lastIndexOf(new RegExp(r'.jp'));
+  final splitted = filePath.substring(0, (lastIndex));
+  final outPath = "${splitted}_out${filePath.substring(lastIndex)}";
+  var result = await FlutterImageCompress.compressAndGetFile(
+    file.absolute.path, outPath,
+    quality: 15,
+  );
+
+  
+  if(result == null){
+    print("Compression resulted in null");
+    return null;
   }
-}
+  return File(result.path);
+  } catch(e){
+    print("Error compressing image: $e");
+    return null;
+  }
+ }
 }

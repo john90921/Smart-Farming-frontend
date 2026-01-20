@@ -39,6 +39,7 @@ class _UserEditPageState extends State<UserEditPage> {
   }
    void submitForm() async{
     if (_formKey.currentState!.validate()) {
+      FocusScope.of(context).unfocus();
       final email = _emailController.text;
       final name = _nameController.text;
       final role = selectedRole;
@@ -47,6 +48,9 @@ class _UserEditPageState extends State<UserEditPage> {
      bool? status =  await  provider.editUser(widget.user?.id, name, email, role);
      _formKey.currentState!.reset();
       if(status == true){
+        _nameController.text = name;
+        _emailController.text = email;
+
         showMessage(context: context, message: "User edited successfully", isError: false);
       }
     }
@@ -97,23 +101,23 @@ class _UserEditPageState extends State<UserEditPage> {
                     },
                   ),
                   const SizedBox(height: 20),
-                  TextFormField(
-                    decoration: const InputDecoration(
+                  // TextFormField(
+                  //   decoration: const InputDecoration(
                       
-                      labelText: "Department",
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Email is required';
-                      }
-                      final emailRegExp = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-                      if (!emailRegExp.hasMatch(value)) {
-                        return 'Enter a valid email';
-                      }
-                      return null;
-                    },
-                  ),
+                  //     labelText: "Department",
+                  //     border: OutlineInputBorder(),
+                  //   ),
+                  //   validator: (value) {
+                  //     if (value == null || value.isEmpty) {
+                  //       return 'Email is required';
+                  //     }
+                  //     final emailRegExp = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                  //     if (!emailRegExp.hasMatch(value)) {
+                  //       return 'Enter a valid email';
+                  //     }
+                  //     return null;
+                  //   },
+                  // ),
                   const SizedBox(height: 20),
                   // Email Field
                   TextFormField(

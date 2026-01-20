@@ -50,7 +50,10 @@ class CommentContentWidget extends StatelessWidget {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: comment.owner_image != null && comment.owner_image != '' ? CircleAvatar(
-                  backgroundImage: NetworkImage(comment.owner_image!),
+                  backgroundImage: 
+                  NetworkImage(comment.owner_image!),
+                  
+                  
                 ): const CircleAvatar(
                   backgroundImage: AssetImage('assets/profile1.jpeg'),
                 ),
@@ -59,6 +62,7 @@ class CommentContentWidget extends StatelessWidget {
                 trailing:userId == comment.owner_id? IconButton(
                   icon: Icon(Icons.more_horiz),
                   onPressed: () {
+                     // unfocus keyboard if open
                     showOptionsSheet(
                       context: context,
                       onDelete: () => commentProvider.deleteComment(

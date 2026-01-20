@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fv2/providers/PostProvider.dart';
+import 'package:fv2/providers/UserProvider.dart';
 import 'package:fv2/views/pages/Disease/Detection/PhotoScanConfirm.dart';
 import 'package:fv2/views/pages/components/post/PostListWidget.dart';
 import 'package:image_picker/image_picker.dart';
@@ -27,7 +28,7 @@ class _HomepageState extends State<Homepage> {
   });    
   super.initState();
   }
-
+  
   Future pickImage(ImageSource source, BuildContext context) async {
     // Use image_picker package to pick image from gallery or camera
     try {
@@ -51,6 +52,8 @@ context.loaderOverlay.show();
   @override
   Widget build(BuildContext context) {
    PostProvider postProvider = Provider.of<PostProvider>(context,listen:false); // get post
+   UserProvider userProvider = Provider.of<UserProvider>(context, listen:false);
+    final user = userProvider.getUser;
     return EasyRefresh(
                       onRefresh: postProvider.getTodayPostsDataTesting,
                       onLoad: postProvider.hasMore ? postProvider.LoadMoreTodayPostsData : null,
@@ -120,7 +123,7 @@ context.loaderOverlay.show();
             ),
           ),
           const SizedBox(height: 20),
-        
+          if(user.role == 'admin' || user.role == 'manager')
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(15.0),

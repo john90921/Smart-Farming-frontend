@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fv2/providers/CommentProvider.dart';
 import 'package:fv2/providers/NotificationProvider.dart';
+import 'package:fv2/providers/PlantProvider.dart';
 import 'package:fv2/providers/PostProvider.dart';
 import 'package:fv2/providers/UserProvider.dart';
 import 'package:fv2/token/TokenManager.dart';
@@ -34,6 +35,8 @@ void main() async{
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => PostProvider()),
+        ChangeNotifierProvider(create: (context) => PlantProvider()),
+
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => CommentProvider()),
         ChangeNotifierProvider(create: (context) => NotificationProvider()),
@@ -48,14 +51,27 @@ void main() async{
     );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key,required this.firstStartRoute});
   final String firstStartRoute;
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+    Key appKey = UniqueKey(); // this key triggers full reset
+  void resetApp() {
+    setState(() {
+      appKey = UniqueKey(); // rebuilds everything under this widget
+    });
+  }
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GlobalLoaderOverlay(
       child: MaterialApp(
+        key: appKey,
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
@@ -77,7 +93,7 @@ class MyApp extends StatelessWidget {
           // tested with just a hot reload.
           colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 58, 141, 183)),
       ),
-        initialRoute: firstStartRoute,
+        initialRoute: widget.firstStartRoute,
         routes: {
           '/UserAddPage': (context) => const UserAddPage(),
           '/UserListPage': (context) => const Userlistpage(),
@@ -91,7 +107,7 @@ class MyApp extends StatelessWidget {
     //       '/home': (context) =>  ProfilePage(
     //   name: 'John Doe',
     //   imageUrl: 'https://via.placeholder.com/150',
-    //   description: 'Software developer passionate about Flutter and Laravel integration.',
+    //   description: 'Software developer pas、sionate about Flutter and Laravel integration.',
     // ),
       '/widgettree': (context) => const WidgetTree(), 
       //     '/home': (context) => ChangeNotifierProvider(

@@ -40,7 +40,8 @@ class _RegisterPageState extends State<RegisterPage> {
           //     ),
           //   ),
           // );
-
+          _formKey.currentState!.reset();
+        
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -48,6 +49,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
           );
+      
           status = true;
          
         } else {

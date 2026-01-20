@@ -2,19 +2,22 @@
 
 
 import 'dart:convert';
+import 'dart:ffi';
 
 
 class Plant {
-final int id;
- final String name;
- final String image;
-  final DateTime created_at;
+final int? id;
+ final String? image;
+ final int? diseaseId;
+ final double? confidence;
+final DateTime created_at;
 
 
   Plant({
-    required this.id,
-    required this.name,
+  required this.id,
     required this.image,
+    required this.diseaseId,
+    required this.confidence,
     required this.created_at,
   });
 
@@ -22,17 +25,19 @@ final int id;
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
-      'name': name,
       'imageUrl': image,
+      'diseaseId': diseaseId,
+      'confidence': confidence,
       'created_at': created_at.toUtc().toIso8601String(),
     };
   }
 
   factory Plant.fromMap(Map<String, dynamic> map) {
     return Plant(
-      id: map['id'] as int,
-      name: map['name'] as String,
-      image: map['image'] as String,
+      id: map['id'] as int?,
+      image: map['image'] as String?,
+      diseaseId: map['diseaseId'] as int?,
+      confidence: double.parse(map['confidence'] as String),
       created_at: DateTime.parse(map['created_at'] as String).toLocal(),
     );
   }

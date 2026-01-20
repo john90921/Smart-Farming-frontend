@@ -58,7 +58,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             profileId: widget.profileId,
             name: newName,
             phone: newPhone,
-            newimage: IsDeletedImage ? null : newimage,
+            newimage: newimage,
             isDeletedImage: IsDeletedImage,
           );
         Navigator.pop(context); // close the loading dialog

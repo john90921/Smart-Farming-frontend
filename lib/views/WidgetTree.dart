@@ -2,11 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:fv2/providers/NotificationProvider.dart';
+import 'package:fv2/providers/PlantProvider.dart';
 import 'package:fv2/providers/PostProvider.dart';
 import 'package:fv2/providers/UserProvider.dart';
 import 'package:fv2/views/pages/CommunityPage.dart';
 import 'package:fv2/views/pages/Disease/DetectionHome/DetectionHomePage.dart';
 import 'package:fv2/views/pages/HomePage.dart';
+import 'package:fv2/views/pages/components/ConfirmDialog.dart';
 import 'package:fv2/views/pages/components/loading/showCircularDialog.dart';
 import 'package:fv2/views/pages/profile/ProfilePage.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -39,6 +41,7 @@ class _WidgetTreeState extends State<WidgetTree> {
     //   ),
   ];
   int _currentIndex = 0;
+ 
 
   @override
   void initState() {
@@ -60,12 +63,16 @@ class _WidgetTreeState extends State<WidgetTree> {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('FruitGuard'),
+        title: const Text('Smart Farming'),
         centerTitle: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
+            bool? confirm = await confirmDialog(context, 'Are you sure you want to logout?');
+             if (confirm != true) {
+               return;
+             }
               showCircularDialog(context);
               bool logoutStatus = await Provider.of<UserProvider>(
                 context,
@@ -85,6 +92,7 @@ class _WidgetTreeState extends State<WidgetTree> {
                 }
               }
             },
+          
           ),
           Consumer<NotificationProvider>(
             // listen to notification provider to get unread count
@@ -161,9 +169,20 @@ class _WidgetTreeState extends State<WidgetTree> {
         ],
         selectedItemColor: Colors.amber[800],
         onTap: (int index) {
-          if(index != 2){
+          if(index == 0){
             Provider.of<PostProvider>(context, listen: false).initial();
             Provider.of<PostProvider>(context, listen: false).getTodayPostsDataTesting(); // reload posts when switch tab
+          }
+          else if(index == 1){
+            
+            PostProvider postProvider = Provider.of<PostProvider>(context, listen: false);
+            postProvider.currentFilter?.setDate('year');
+            postProvider.currentFilter?.setSortBy('latest');
+
+            Provider.of<PostProvider>(context, listen: false).getTodayPostsDataTesting(); // reload posts when switch tab
+          }
+          else if(index == 2){
+            Provider.of<PlantProvider>(context, listen: false).displayRecentPlant(context);
           }
           setState(() => _currentIndex = index);
         },

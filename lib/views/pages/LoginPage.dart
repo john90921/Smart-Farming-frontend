@@ -24,7 +24,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
+String selectedRole = "worker";
   Future<String?> _authUser(BuildContext context) async {
     bool statusLogin = false;
     String message = "";
@@ -38,6 +38,7 @@ class _LoginPageState extends State<LoginPage> {
             data: {
               "email": _emailController.text,
               "password": _passwordController.text,
+              "role": selectedRole,
             },
           ),
         );
@@ -124,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
   //     );
   //   }
   // }
-  String selectedValue = "Staff";
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -221,8 +222,8 @@ class _LoginPageState extends State<LoginPage> {
                     child: DropdownButton<String>(
                       underline: const SizedBox(),
                       isExpanded: true,
-                      value: selectedValue,
-                      items: ["Staff", "Manager"].map((String value) {
+                      value: selectedRole,
+                      items: ["worker", "manager", "admin"].map((String value) {
                         return DropdownMenuItem(
                           value: value,
                           child: Text(value),
@@ -230,7 +231,7 @@ class _LoginPageState extends State<LoginPage> {
                       }).toList(),
                       onChanged: (newValue) {
                         setState(() {
-                          selectedValue = newValue!;
+                          selectedRole = newValue!;
                         });
                       },
                     ),
@@ -238,14 +239,9 @@ class _LoginPageState extends State<LoginPage> {
 
                   const SizedBox(height: 10),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Row(
-                        children: [
-                          Checkbox(value: false, onChanged: (value) {}),
-                          const Text("Remember me"),
-                        ],
-                      ),
+                      
                       TextButton(
                         onPressed: () {
                           Navigator.pushNamed(context, '/requestResetPage');

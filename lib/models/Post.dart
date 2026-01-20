@@ -17,6 +17,7 @@ class Post extends ChangeNotifier {
   final String ownerName;
   final int owner_id;
   final String? ownerImage;
+  final String? ownerRole;
   List<Comment>? comments;
   final String? state;
   final String? city;
@@ -35,6 +36,7 @@ class Post extends ChangeNotifier {
     required this.owner_id,
     required this.ownerName,
     required this.ownerImage,
+    required this.ownerRole,
     this.comments,
     this.state,
     this.city,
@@ -97,7 +99,7 @@ class Post extends ChangeNotifier {
       'owner': ownerName,
       'owner_id': owner_id,
       'ownerImage': ownerImage,
-      'comments': comments != null ? comments!.map((x) => x.toMap()).toList() : [],
+      'ownerRole': ownerRole,
     };
   }
 
@@ -115,6 +117,7 @@ class Post extends ChangeNotifier {
       owner_id: map['owner_id'] as int,
       ownerName: map['owner_name'] ?? 'no name',
       ownerImage: map['owner_image'] as String?,
+      ownerRole: map['owner_role'] as String?,
       state: map['state'] as String?,
       city: map['city'] as String?,
     );
@@ -153,6 +156,7 @@ class Post extends ChangeNotifier {
       ownerName: ownerName ?? this.ownerName,
       owner_id : owner_id ?? this.owner_id,
       ownerImage: ownerImage ?? this.ownerImage,
+      ownerRole: ownerRole ?? this.ownerRole,
       comments: comments ?? this.comments,
     );
   }

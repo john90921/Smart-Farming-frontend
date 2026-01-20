@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fv2/dio/DioHandler.dart';
 import 'package:fv2/utils/message_helper.dart';
 import 'package:fv2/views/pages/OtpScreen.dart';
+import 'package:fv2/views/pages/ResetPasswordPage.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 
 class RequestResetPage extends StatefulWidget {
@@ -19,20 +20,20 @@ class _RequestResetPageState extends State<RequestResetPage> {
   void _requestReset(String email) async {
     final Dio dio = DioHandler.instance.dio;
     bool status = false;
-    // temporary navigation
-    Navigator.pushReplacement(
-      //direct to reset password
-      context,
-      MaterialPageRoute(
-        builder: (context) => LoaderOverlay(
-          child: OtpScreen(
-            gmail: "sorvictor90@gmail.com",
-            isForResetPassword: true,
-          ),
-        ),
-      ),
-    );
-
+    // // temporary navigation
+    // Navigator.pushReplacement(
+    //   //direct to reset password
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => LoaderOverlay(
+    //       child: OtpScreen(
+    //         gmail: "sorvictor90@gmail.com",
+    //         isForResetPassword: true,
+    //       ),
+    //     ),
+    //   ),
+    // );
+    
     try {
       final response = await dio.post(
         "/forgetPassword",
@@ -49,9 +50,15 @@ class _RequestResetPageState extends State<RequestResetPage> {
         //     ),
         //   );
         // });
-        showMessage(context: context, message: "Otp sent to your email.");
+        // showMessage(context: context, message: "Otp sent to your email.");
         status = true;
-
+    Navigator.pushReplacement(
+            //direct to reset password
+            context,
+            MaterialPageRoute(
+              builder: (context) => ResetPasswordPage(gmail: "$email"),
+            ),
+          );
         return null; // success
       } else if (response.data['status'] == false) {
         showMessage(context: context, message: "Error");
@@ -69,12 +76,12 @@ class _RequestResetPageState extends State<RequestResetPage> {
     if (status) {
       if (!mounted) return;
       Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) =>
-              OtpScreen(gmail: email, isForResetPassword: true),
-        ),
-      );
+            //direct to reset password
+            context,
+            MaterialPageRoute(
+              builder: (context) => ResetPasswordPage(gmail: email),
+            ),
+          );
     }
   }
 

@@ -106,7 +106,7 @@ class _CommunityPageState extends State<CommunityPage> {
           // ),
           SizedBox(height: 20),
           Text(
-            "Community Feed",
+            "Latest Posts",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           PostListWidget(),
