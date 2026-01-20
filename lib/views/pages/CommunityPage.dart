@@ -104,29 +104,29 @@ class _CommunityPageState extends State<CommunityPage> {
                 ],
               ),
             ),
-
-            // Container(
-            //   width: double.infinity,
-            //   padding: const EdgeInsets.all(15.0),
-            //   decoration: BoxDecoration(
-            //     color: Colors.white,
-            //     borderRadius: BorderRadius.circular(8.0),
-
-            //   ),
-            //   child: Row(children: [
-            //     Icon( Icons.people, color: Colors.blue, size: 30),
-            //     SizedBox(width: 10),
-            //     Text("User Management"),
-            //     Spacer(),
-            //     IconButton(onPressed: onPressed, icon: Icon(Icons.arrow_forward_ios))
-            //   ],),
-            // ),
-            SizedBox(height: 20),
-            Text(
-              "Community Feed",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            PostListWidget(),
+        
+          // Container(
+          //   width: double.infinity,
+          //   padding: const EdgeInsets.all(15.0),
+          //   decoration: BoxDecoration(
+          //     color: Colors.white,
+          //     borderRadius: BorderRadius.circular(8.0),
+      
+          //   ),
+          //   child: Row(children: [
+          //     Icon( Icons.people, color: Colors.blue, size: 30),
+          //     SizedBox(width: 10),
+          //     Text("User Management"),
+          //     Spacer(),
+          //     IconButton(onPressed: onPressed, icon: Icon(Icons.arrow_forward_ios))
+          //   ],),
+          // ),
+          SizedBox(height: 20),
+          Text(
+            "Latest Posts",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          PostListWidget(),
           ],
         ),
       ),

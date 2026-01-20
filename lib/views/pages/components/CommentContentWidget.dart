@@ -27,7 +27,7 @@ class CommentContentWidget extends StatelessWidget {
       context,
       listen: false,
     );
-    final user_id = Provider.of<Userprovider>(context, listen: false).getUser?.id;
+    final userId = Provider.of<UserProvider>(context, listen: false).getUser.id;
 
     return Selector<CommentProvider, Comment?>(
       selector: (_, commentProvdier) => commentProvdier.getComemnt(id),
@@ -50,15 +50,19 @@ class CommentContentWidget extends StatelessWidget {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: comment.owner_image != null && comment.owner_image != '' ? CircleAvatar(
-                  backgroundImage: NetworkImage(comment.owner_image!),
+                  backgroundImage: 
+                  NetworkImage(comment.owner_image!),
+                  
+                  
                 ): const CircleAvatar(
                   backgroundImage: AssetImage('assets/profile1.jpeg'),
                 ),
                 title: Text(comment.owner_name ?? ''),
                 subtitle: Text(comment.getTimeAgo()),
-                trailing:user_id == comment.owner_id? IconButton(
+                trailing:userId == comment.owner_id? IconButton(
                   icon: Icon(Icons.more_horiz),
                   onPressed: () {
+                     // unfocus keyboard if open
                     showOptionsSheet(
                       context: context,
                       onDelete: () => commentProvider.deleteComment(

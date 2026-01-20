@@ -6,17 +6,21 @@ import 'package:flutter/services.dart';
 import 'package:fv2/dio/ImageDioHandle.dart';
 import 'package:fv2/models/Post.dart';
 import 'package:fv2/providers/PostProvider.dart';
+import 'package:fv2/services/ImageService.dart';
 import 'package:fv2/utils/message_helper.dart';
 import 'package:fv2/views/pages/components/form/CustomFormField.dart';
+import 'package:fv2/views/pages/components/loading/showCircularDialog.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
+import 'package:location/location.dart';
+import 'package:geocoding/geocoding.dart' hide Location;
 
 class PostFormPage extends StatefulWidget {
   final Post? post;
   final File? imageFile;
   const PostFormPage({super.key, this.post, this.imageFile});
-  
+
   @override
   State<PostFormPage> createState() => _PostFormPageState();
 }
@@ -26,10 +30,56 @@ class _PostFormPageState extends State<PostFormPage> {
   String? newtitle, newcontent;
   File? newimage;
   String? oldImagePath;
+  String? city;
+  String? state;
   final TextEditingController titleController = TextEditingController();
   final TextEditingController contentController = TextEditingController();
+  final TextEditingController cityController = TextEditingController();
+  final TextEditingController stateController = TextEditingController();
+
   bool IsDeletedImage = false;
   bool HaveUploadedImage = false;
+  Future<void> _getLocation() async {
+    Location location = Location();
+
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
+    LocationData locationData;
+
+    serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        return;
+      }
+    }
+
+    permissionGranted = await location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    locationData = await location.getLocation();
+
+    // Get coordinates
+    final loc = await location.getLocation();
+
+    // Get city, state, country
+    final placemarks = await placemarkFromCoordinates(
+      loc.latitude!,
+      loc.longitude!,
+    );
+    final place = placemarks.first;
+
+    stateController.text = place.administrativeArea ?? '';
+    cityController.text = place.locality ?? '';
+    print(
+      'City: ${place.locality}, State: ${place.administrativeArea}, Country: ${place.country}',
+    );
+  }
 
   @override
   void initState() {
@@ -44,10 +94,9 @@ class _PostFormPageState extends State<PostFormPage> {
       }
       oldImagePath = widget.post!.image;
     }
-    if(widget.imageFile != null) {
+    if (widget.imageFile != null) {
       newimage = widget.imageFile;
     }
-    super.initState();
   }
 
   @override
@@ -65,21 +114,13 @@ class _PostFormPageState extends State<PostFormPage> {
       final imageTemporary = File(image.path);
       setState(() {
         oldImagePath = null;
-        this.newimage = imageTemporary;
+        newimage = imageTemporary;
       });
     } on PlatformException catch (e) {
       print("Failed to pick image: $e");
     }
+  }
 
-  }
-Future<String?> uploadImage(File file) async {
-  try {
-    final url = await ImageDioHandle.instance.uploadToImgBB(file);
-    return url;
-  } catch (e) {
-    throw Exception('Image upload failed: $e');
-  }
-}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,20 +152,22 @@ Future<String?> uploadImage(File file) async {
                           foregroundColor: Colors.white,
                         ),
                         onPressed: () async {
-                 
+                          showCircularDialog(context);
                           if (_formKey.currentState!.validate()) {
                             _formKey.currentState!.save();
-                            print(
-                              "Title: $newtitle, Content: $newcontent, Image: $newimage.path",
-                            );
                             String? result;
-                         String? imageUrl;
+                            String? imageUrl;
                             try {
-                              context.loaderOverlay.show();
-                            if (newimage != null && newimage!.path.isNotEmpty) {
-                             imageUrl = await uploadImage(newimage!);
-                            }
-                            context.loaderOverlay.hide();
+                              // if (newimage != null &&
+                              //     newimage!.path.isNotEmpty) {
+                              //   try {
+                              //     imageUrl = await ImageDioHandle.instance
+                              //         .uploadToImgBB(newimage!);
+                              //   } catch (e) {
+                              //     print("Image upload failed: $e");
+                              //   }
+                              // }
+                              // print("Image URL after upload: $imageUrl"); // Debug print
                               if (widget.post != null && context.mounted) {
                                 // editing existing post
                                 result =
@@ -135,9 +178,9 @@ Future<String?> uploadImage(File file) async {
                                       post: widget.post!,
                                       title: newtitle!,
                                       content: newcontent!,
-                                      isRemoveImage : IsDeletedImage,
-                                      HaveUploadedImage : HaveUploadedImage,
-                                      newImagePath: imageUrl,
+                                      isRemoveImage: IsDeletedImage,
+                                      HaveUploadedImage: HaveUploadedImage,
+                                      newImage: newimage,
                                     );
                               } else {
                                 result =
@@ -147,20 +190,22 @@ Future<String?> uploadImage(File file) async {
                                     ).addNewPost(
                                       newtitle!,
                                       newcontent!,
-                                      imageUrl,
+                                      newimage,
                                       context,
+                                      state,
+                                      city,
                                     );
                               }
-                             
                             } on Exception catch (e) {
                               result = e.toString();
                             }
+                            Navigator.pop(context); // close loading dialog
                             if (result != null) {
                               showMessage(context: context, message: result);
                             }
-                            
-                            if(context.mounted){
-                            Navigator.pop(context);
+
+                            if (context.mounted) {
+                              Navigator.pop(context);
                             }
                           }
                         },
@@ -180,6 +225,7 @@ Future<String?> uploadImage(File file) async {
                     },
                     onSaved: (value) {
                       newtitle = value;
+                      return null;
                     },
                   ),
                   CustomFormField(
@@ -194,8 +240,61 @@ Future<String?> uploadImage(File file) async {
                     },
                     onSaved: (value) {
                       newcontent = value;
+                      return null;
                     },
                   ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(8.0),
+                  //   child: ElevatedButton.icon(
+                  //     onPressed: () async {
+                  //       await _getLocation();
+                  //     },
+                  //             icon: const Icon(Icons.location_on),
+                  //             label: const Text(
+                  //               'Get My Location',
+                  //               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  //             ),
+                  //             style: ElevatedButton.styleFrom(
+                  //               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                  //               shape: RoundedRectangleBorder(
+                  //                 borderRadius: BorderRadius.circular(12),
+                  //               ),
+                  //             ),
+                  //           ),
+                  // ),
+                  // TextFormField(
+                  //   enabled: false,
+                  //   controller: stateController,
+                  //   decoration: InputDecoration(
+                  //     labelText: "State",
+                  //     border: const OutlineInputBorder(),
+                  //   ),
+                  //   minLines: 1,
+                  //   validator: (value) {
+                  //     return null;
+                  //   },
+                  //   onSaved: (value) {
+                  //     state = value;
+                  //   },
+                  // ),
+                  // const SizedBox(height: 10)
+                  // ,
+                  //  TextFormField(
+                  //   enabled: false,
+                  //   controller: cityController,
+                  //   decoration: InputDecoration(
+                  //     labelText: "City",
+                  //     border: const OutlineInputBorder(),
+                  //   ),
+                  //   minLines: 1,
+                  //     validator: (value) {
+                  //     return null;
+                  //   },
+                  //   onSaved: (value) {
+                  //     city = value;
+                  //   },
+                  // ),
+                  // const SizedBox(height: 10),
                   Container(
                     //image display  and  picker container
                     decoration: BoxDecoration(
@@ -222,7 +321,7 @@ Future<String?> uploadImage(File file) async {
                             child: Center(
                               child:
                                   newimage != null ||
-                                       oldImagePath !=
+                                      oldImagePath !=
                                           null // check if image or the url is not null //if url have photo then show , if image file picked then show
                                   ? Stack(
                                       // show image with remove button
@@ -279,7 +378,7 @@ Future<String?> uploadImage(File file) async {
                                 style: TextButton.styleFrom(
                                   backgroundColor: Color(0xFFE5E7EB),
                                 ),
-                                onPressed: (){
+                                onPressed: () {
                                   if (!mounted) return;
                                   pickImage(ImageSource.gallery, context);
                                 },
@@ -297,22 +396,20 @@ Future<String?> uploadImage(File file) async {
             ),
           ),
         ),
-      
-      
       ),
     );
   }
 
-  FormImage(){
-    if(oldImagePath != null){ // check if old image of the post is not null then show image
-       return  CachedNetworkImage(
-                      imageUrl: oldImagePath!,
-                      fit: BoxFit.fill,
-                      placeholder: (context, url) =>
-                          const Center(child: CircularProgressIndicator()),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.broken_image),
-                    );
+  FormImage() {
+    if (oldImagePath != null) {
+      // check if old image of the post is not null then show image
+      return CachedNetworkImage(
+        imageUrl: oldImagePath!,
+        fit: BoxFit.fill,
+        placeholder: (context, url) =>
+            const Center(child: CircularProgressIndicator()),
+        errorWidget: (context, url, error) => const Icon(Icons.broken_image),
+      );
       // show image from url
       // return Image.network(
       //   widget.post!.image!,
@@ -322,13 +419,6 @@ Future<String?> uploadImage(File file) async {
       //   errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
       // );
     }
-    return Image.file(
-      newimage!,
-      width: 200,
-      height: 200,
-      fit: BoxFit.cover,
-    );
+    return Image.file(newimage!, width: 200, height: 200, fit: BoxFit.cover);
   }
-
-  }
-
+}

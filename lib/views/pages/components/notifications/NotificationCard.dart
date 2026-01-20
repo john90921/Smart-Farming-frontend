@@ -32,7 +32,7 @@ class NotificationCard extends StatelessWidget {
           title,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: Text("${message}\n${time}"),
+        subtitle: Text("$message\n$time"),
         trailing: IconButton(onPressed: ()=>{
           onTap != null ? onTap!() : null
         }, icon: const Icon(Icons.arrow_forward_ios_rounded)),

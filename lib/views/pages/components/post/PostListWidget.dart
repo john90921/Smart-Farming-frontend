@@ -58,8 +58,8 @@ class _PostListWidgetState extends State<PostListWidget> {
                       separatorBuilder: (context, index) =>
                           const SizedBox(width: 50),
                       itemBuilder: (context, index) {
-                        final post_id = postIdList[index];
-                        return Postwidget(post_id: post_id, isfromPostPage: false);
+                        final postId = postIdList[index];
+                        return Postwidget(post_id: postId, isfromPostPage: false);
                         //   onTap: () {
                         //      Navigator.pushNamed(
                         //                         context,

@@ -5,6 +5,7 @@ import 'package:fv2/models/Reply.dart';
 import 'package:fv2/providers/CommentProvider.dart';
 import 'package:fv2/providers/PostProvider.dart';
 import 'package:fv2/providers/ReplyProvider.dart';
+import 'package:fv2/utils/message_helper.dart';
 import 'package:fv2/views/WidgetTree.dart';
 import 'package:fv2/views/pages/PostPage.dart';
 import 'package:fv2/views/pages/components/CommentWidget.dart';
@@ -35,8 +36,23 @@ class _CommentListWidgetState extends State<CommentListWidget> {
                     builder: (context, commentProvider, child) {
                       List<Comment>? comments = commentProvider.comments;
                       
-                      
-                      if(commentProvider.isAddingComment){
+                      // if(commentProvider.error){
+                      //   showMessage(
+                      //     context: context,
+                      //     message: "Error",
+                      //     isError: true,
+                      //   );
+                      // }
+                      // else if(
+                      //   commentProvider.success
+                      // ){
+                      //   showMessage(
+                      //     context: context,
+                      //     message: "Comment added successfully",
+                      //     isError: false,
+                      //   );
+                      // }
+                      if(commentProvider.isLoading){
                         return Column(
                           children: [
                             const Center(child: CircularProgressIndicator()),
@@ -55,7 +71,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
                       else if(commentProvider.isLoading){
                         return const Center(child: CircularProgressIndicator());
                       }
-                      else if(comments.length == 0) {
+                      else if(comments.isEmpty) {
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text("No comments"),

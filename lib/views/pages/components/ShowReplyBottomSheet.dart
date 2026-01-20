@@ -13,7 +13,7 @@ Future<String?> ShowReplyBottomSheet(
     String? content
 }
 ) {
-  final TextEditingController _replyController = TextEditingController(text: content ?? '');
+  final TextEditingController replyController = TextEditingController(text: content ?? '');
   // final replyProvider = Provider.of<ReplyProvider>(context, listen: false);
   ValueNotifier<bool> isChanged = ValueNotifier(false);
   return showModalBottomSheet<String>(
@@ -40,7 +40,7 @@ Future<String?> ShowReplyBottomSheet(
                 isChanged.value = value.trim().isNotEmpty && value.trim() != (content ?? '')
                 }
               },
-              controller: _replyController,
+              controller: replyController,
 
               autofocus: true,
               decoration: const InputDecoration(
@@ -70,8 +70,8 @@ Future<String?> ShowReplyBottomSheet(
                     
                     return ElevatedButton(
                     onPressed: () async{
-                      if (_replyController.text.trim().isNotEmpty){
-                        String message = _replyController.text.trim();
+                      if (replyController.text.trim().isNotEmpty){
+                        String message = replyController.text.trim();
                         if(isEdit){
                         
                           String? result = await editContent!(Id:id,content:message,context:context);

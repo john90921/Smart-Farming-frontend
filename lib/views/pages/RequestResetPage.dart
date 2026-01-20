@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fv2/dio/DioHandler.dart';
 import 'package:fv2/utils/message_helper.dart';
 import 'package:fv2/views/pages/OtpScreen.dart';
+import 'package:fv2/views/pages/ResetPasswordPage.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 
 class RequestResetPage extends StatefulWidget {
@@ -15,57 +16,73 @@ class RequestResetPage extends StatefulWidget {
 class _RequestResetPageState extends State<RequestResetPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
- 
 
-  void _requestReset(String email) async {  
-    final Dio _dio = DioHandler.instance.dio;
+  void _requestReset(String email) async {
+    final Dio dio = DioHandler.instance.dio;
     bool status = false;
-  
+    // // temporary navigation
+    // Navigator.pushReplacement(
+    //   //direct to reset password
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => LoaderOverlay(
+    //       child: OtpScreen(
+    //         gmail: "sorvictor90@gmail.com",
+    //         isForResetPassword: true,
+    //       ),
+    //     ),
+    //   ),
+    // );
+    
+    try {
+      final response = await dio.post(
+        "/forgetPassword",
+        data: {"email": email},
+      );
+      if (response.data['status'] == true) {
+        // WidgetsBinding.instance.addPostFrameCallback((_) {
+        //   Navigator.pushReplacement(
+        //     //direct to reset password
 
-            try {
-     
-              final response = await _dio.post(
-                "/forgetPassword",
-                data: {"email": email},
-              );
-              if (response.data['status'] == true) {
-                // WidgetsBinding.instance.addPostFrameCallback((_) {
-                //   Navigator.pushReplacement(
-                //     //direct to reset password
-
-                //     context,
-                //     MaterialPageRoute(
-                //       builder: (context) => LoaderOverlay(child: OtpScreen(gmail: gmail)),
-                //     ),
-                //   );
-                // });
-                showMessage(context:context,message:  "Otp sent to your email.");
-                status = true;
-                  
-                
-                return null; // success
-              } else if (response.data['status'] == false) {
-                showMessage(context:context,message:  "Error");
-                print("Error: ${response.data['message']}");
-              }
-            } on DioException catch (e) {
-              if (e.response != null) {
-                print ("Error: ${e.response?.statusCode} - ${e.response?.data}"); // ❌ 401, 404, 500, etc. → Dio throws → handled in catch (DioException).
-              } else {
-                print("Error: ${e.message}"); //network error
-              }
-            }
-            if(status){
-            if(!mounted) return;
-                  Navigator.pushReplacement(
-                     context,
-                        MaterialPageRoute(
-                          builder: (context) => OtpScreen(gmail:email, isForResetPassword: true),
-                        ),
-                  );
-            }
-
-
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => LoaderOverlay(child: OtpScreen(gmail: gmail)),
+        //     ),
+        //   );
+        // });
+        // showMessage(context: context, message: "Otp sent to your email.");
+        status = true;
+    Navigator.pushReplacement(
+            //direct to reset password
+            context,
+            MaterialPageRoute(
+              builder: (context) => ResetPasswordPage(gmail: "$email"),
+            ),
+          );
+        return null; // success
+      } else if (response.data['status'] == false) {
+        showMessage(context: context, message: "Error");
+        print("Error: ${response.data['message']}");
+      }
+    } on DioException catch (e) {
+      if (e.response != null) {
+        print(
+          "Error: ${e.response?.statusCode} - ${e.response?.data}",
+        ); // ❌ 401, 404, 500, etc. → Dio throws → handled in catch (DioException).
+      } else {
+        print("Error: ${e.message}"); //network error
+      }
+    }
+    if (status) {
+      if (!mounted) return;
+      Navigator.pushReplacement(
+            //direct to reset password
+            context,
+            MaterialPageRoute(
+              builder: (context) => ResetPasswordPage(gmail: email),
+            ),
+          );
+    }
   }
 
   @override
@@ -100,7 +117,7 @@ class _RequestResetPageState extends State<RequestResetPage> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 30),
-          
+
                   // Email Input Field
                   TextFormField(
                     controller: _emailController,
@@ -112,22 +129,24 @@ class _RequestResetPageState extends State<RequestResetPage> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email';
-                      } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                      } else if (!RegExp(
+                        r'^[^@]+@[^@]+\.[^@]+',
+                      ).hasMatch(value)) {
                         return 'Please enter a valid email';
                       }
                       return null;
                     },
                   ),
-          
+
                   const SizedBox(height: 25),
-          
+
                   // Submit Button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () async{
+                      onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                         _requestReset(_emailController.text);
+                          _requestReset(_emailController.text);
                         }
                       },
                       child: const Text('Send Reset Link'),

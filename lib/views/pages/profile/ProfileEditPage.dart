@@ -7,6 +7,7 @@ import 'package:fv2/dio/ImageDioHandle.dart';
 import 'package:fv2/providers/UserProvider.dart';
 import 'package:fv2/utils/message_helper.dart';
 import 'package:fv2/views/pages/components/form/CustomFormField.dart';
+import 'package:fv2/views/pages/components/loading/showCircularDialog.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
@@ -14,14 +15,18 @@ import 'package:provider/provider.dart';
 class ProfileEditPage extends StatefulWidget {
   final String? name;
   final String? imageUrl;
-  final String? description;
+  final String? phone;
+  final String? email;
+  final int? profileId;
   
 
   const ProfileEditPage({
     super.key,
+    required this.profileId,
     required this.name,
     required this.imageUrl,
-    required this.description,
+    required this.phone,
+    required this.email,
   });
 
   @override
@@ -30,21 +35,51 @@ class ProfileEditPage extends StatefulWidget {
 
 class _ProfileEditPageState extends State<ProfileEditPage> {
   final _formKey = GlobalKey<FormState>();
-  String? newName, newDescription;
+  int? userID;
+  String? newName, newPhone,newEmail;
   File? newimage;
   String? oldImagePath;
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController contentController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   bool IsDeletedImage = false;
   bool HaveUploadedImage = false;
+  void submitForm() async{
+    if(_formKey.currentState!.validate()){
+      _formKey.currentState!.save();
+      
+        print("Name: $newName");
+        print("Phone: $newPhone");
+        print("Image: $newimage");
+        print("widget.profileId: ${widget.profileId}");
 
+        showCircularDialog(context);
+        final provider = Provider.of<UserProvider>(context, listen: false);
+        bool? status =  await  provider.editProfile(
+            profileId: widget.profileId,
+            name: newName,
+            phone: newPhone,
+            newimage: newimage,
+            isDeletedImage: IsDeletedImage,
+          );
+        Navigator.pop(context); // close the loading dialog
+        if(status == true){
+          showMessage(context: context, message: "Profile edited successfully", isError: false);
+          
+        }
+        else{
+          showMessage(context: context, message: "Failed to edit profile", isError: true);
+        }
+     
+        
+    }
+  }
     @override
   void initState() {
     super.initState();
    
       // check if editing existing post
-      titleController.text = widget.name ?? ''; // set title controller text
-      contentController.text = widget.description ?? ''; // set content controller text
+      _nameController.text = widget.name ?? ''; // set title controller text
+      _phoneController.text = widget.phone ?? ''; // set content controller text
       if (widget.imageUrl != null) {
         HaveUploadedImage = true;
       }
@@ -54,13 +89,14 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   }
    Future pickImage(ImageSource source, BuildContext context) async {
     // Use image_picker package to pick image from gallery or camera
+    
     try {
       final image = await ImagePicker().pickImage(source: source);
       if (image == null) return;
       final imageTemporary = File(image.path);
       setState(() {
         oldImagePath = null;
-        this.newimage = imageTemporary;
+        newimage = imageTemporary;
       });
     } on PlatformException catch (e) {
       print("Failed to pick image: $e");
@@ -189,8 +225,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     ),
                   ),               
                   CustomFormField(
-                    controller: titleController,
-                    hintText: "name",
+
+                    controller: _nameController,
+                  
+                    hintText: "Name",
                     minLines: 1,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -200,19 +238,35 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     },
                     onSaved: (value) {
                       newName = value;
+                      return null;
                     },
                   ),
+                
                   CustomFormField(
-                    controller: contentController,
-                    hintText: "description",
-                    minLines: 5,
+                    controller: _phoneController,
+                    hintText: "Phone",
+                    minLines: 1,
                     validator: (value) {
                       return null;
                     },
                     onSaved: (value) {
-                      newDescription = value;
+                      newPhone = value;
+                      return null;
                     },
                   ),
+                  // CustomFormField(
+                  //   controller: contentController,
+                  //   hintText: "Department",
+                  //   minLines: 1,
+                  //   validator: (value) {
+                  //     return null;
+                  //   },
+                  //   onSaved: (value) {
+                  //   },
+                  // ),
+     
+                  
+  
                   Row(
                     //button row
                     mainAxisAlignment: MainAxisAlignment.end, // align to right
@@ -223,33 +277,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                           foregroundColor: Colors.white,
                         ),
                         onPressed: () async {
-                 
-                          if (_formKey.currentState!.validate()) {
-                            _formKey.currentState!.save();
-                            print("Name: $newName");
-                            print("Description: $newDescription");
-                            print("Image: $newimage");
-                             String? imageUrl;
-       
-                            if (newimage != null && newimage!.path.isNotEmpty) {
-                             imageUrl= await uploadImage(newimage!);
-                            }
-                            // Call provider to update profile
-                          String? message =  await Provider.of<Userprovider>(context, listen: false)
-                                .editProfile(
-                              name: newName!,
-                              description: newDescription!,
-                              HaveUploadedImage: HaveUploadedImage,
-                              newImagePath: imageUrl,
-                              isRemoveImage: IsDeletedImage,
-                            );
-                            if(context.mounted){
-                            showMessage(context: context, message: message!);
-                            }
-                          
-                            Navigator.pop(context);
-                          
-                          }
+                          submitForm();
                         },
                         child: Text("Post"),
                       ),

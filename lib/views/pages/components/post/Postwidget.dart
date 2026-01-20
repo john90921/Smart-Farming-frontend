@@ -42,7 +42,8 @@ class _PostwidgetState extends State<Postwidget> {
 
   
     final postProvider = Provider.of<PostProvider>(context, listen: false);
-    final user_id = Provider.of<Userprovider>(context, listen: false).getUser.id;
+    final userId = Provider.of<UserProvider>(context, listen: false).getUser.id;
+    final isAdmin = Provider.of<UserProvider>(context, listen: false).getUser.role == 'admin';
 
     // if(postProvider.getPost(widget.post_id) == null){ // if the post cannot found in post list 
     //   return FutureBuilder(
@@ -72,7 +73,8 @@ class _PostwidgetState extends State<Postwidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ListTile(
-                leading: CircleAvatar(
+                leading: 
+                CircleAvatar(
                   radius: 24,
                 backgroundImage: post.ownerImage != null
                       ? CachedNetworkImageProvider(post.ownerImage!)
@@ -81,9 +83,11 @@ class _PostwidgetState extends State<Postwidget> {
                       ? const Icon(Icons.person, color: Colors.white)
                       : null,
                 ),
-                title: Text(post.ownerName), // User name
-                subtitle: Text(post.getTimeAgo()), // Post time
-                trailing: user_id == post.owner_id ? IconButton(
+                title: Text("${post.ownerName}\n Role: ${post.ownerRole}"), // User name
+                subtitle: Text(post.getTimeAgo()), // Post time \n ${ post.state?? ""} \n ${post.city??""}
+                trailing: userId == post.owner_id
+                || isAdmin
+                 ? IconButton(
                   icon: Icon(Icons.more_horiz),
                   onPressed: () {
                     {
@@ -108,17 +112,10 @@ class _PostwidgetState extends State<Postwidget> {
                       }
                     }
                   },
-                ):IconButton(onPressed: (){
-                    try {
-                        showReportsOptionSheet(
-                          context: context,
-                          onDelete: () => postProvider.reportPost(post.id, context),
-                          isFromPostPage: widget.isfromPostPage,
-                        );
-                      } catch (e) {
-                        print("error $e");
-                      }
-                }, icon: Icon(Icons.more_horiz)), // More options icon
+                ): 
+                
+                SizedBox.shrink(),
+                 // More options icon
               ),
                Padding(
                 padding: const EdgeInsets.all(20.0),

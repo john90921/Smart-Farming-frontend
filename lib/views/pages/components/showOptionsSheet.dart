@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fv2/models/Post.dart';
-import 'package:fv2/providers/PostProvider.dart';
 import 'package:fv2/views/pages/components/ConfirmDialog.dart';
-import 'package:fv2/views/pages/components/ShowReplyBottomSheet.dart';
-import 'package:loader_overlay/loader_overlay.dart';
 
 Future<void> showOptionsSheet({
   required BuildContext context,
@@ -15,60 +11,63 @@ Future<void> showOptionsSheet({
   // required Future Function() onEdit
 }) async {
   try {
+    FocusScope.of(context).unfocus();
     await showModalBottomSheet(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       context: context,
       builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Text(
-                  "Settings",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Text(
+                    "Settings",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.close), //close the setting
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
                 ),
-                trailing: IconButton(
-                  icon: const Icon(Icons.close), //close the setting
-                  onPressed: () {
+                const SizedBox(height: 10),
+                ListTile(
+                  leading: const Icon(Icons.edit),
+                  title: const Text('Edit'),
+                  subtitle: const Text('Edit'),
+                  onTap: () {
                     Navigator.pop(context);
+                    onEdit != null ? onEdit() : null;
                   },
                 ),
-              ),
-              const SizedBox(height: 10),
-              ListTile(
-                leading: const Icon(Icons.edit),
-                title: const Text('Edit'),
-                subtitle: const Text('Edit your post'),
-                onTap: () {
-                  Navigator.pop(context);
-                  onEdit != null ? onEdit() : null;
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.delete),
-                title: const Text('Delete'),
-                subtitle: const Text('Delete your post'),
-                onTap: () async {
-                  final bool? confirm = await confirmDialog(context);
-
-                  if (confirm == false) {
-                    return;
-                  }
-                  String message = await onDelete();
-                  Navigator.pop(context);
-
-                  if (isFromPostPage) {
+                ListTile(
+                  leading: const Icon(Icons.delete),
+                  title: const Text('Delete'),
+                  subtitle: const Text('Delete'),
+                  onTap: () async {
+                    final bool? confirm = await confirmDialog(context, 'Are you sure you want to delete?');
+          
+                    if (confirm == false) {
+                      return;
+                    }
+                    String message = await onDelete();
                     Navigator.pop(context);
-                  }
-
-                  ScaffoldMessenger.of(context)
-                    ..hideCurrentSnackBar()
-                    ..showSnackBar(SnackBar(content: Text(message)));
-                },
-              ),
-            ],
+          
+                    if (isFromPostPage) {
+                      Navigator.pop(context);
+                    }
+          
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(SnackBar(content: Text(message)));
+                  },
+                ),
+              ],
+            ),
           ),
         );
       },

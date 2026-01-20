@@ -1,9 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fv2/api/ApiHelper.dart';
 import 'package:fv2/models/Reply.dart';
 import 'package:fv2/providers/CommentProvider.dart';
-import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
 class ReplyProvider extends ChangeNotifier {
@@ -30,12 +28,12 @@ class ReplyProvider extends ChangeNotifier {
         .toList();
   }
 
-  LoadMoreRepliesData(int comment_id) async {
+  LoadMoreRepliesData(int commentId) async {
     try {
       pages++;
       notifyListeners();
       ApiResult result = await Apihelper.post(
-        ApiRequest(path: "/commentReplies", data: {"comment_id": comment_id}),
+        ApiRequest(path: "/commentReplies", data: {"comment_id": commentId}),
       );
       if (result.status == true) {
         if (result.data is List) {
@@ -58,12 +56,12 @@ class ReplyProvider extends ChangeNotifier {
     }
   }
 
-  Future<String?> fetchReplies(int comment_id) async {
+  Future<String?> fetchReplies(int commentId) async {
     try {
       isLoading = true;
       notifyListeners();
       ApiResult result = await Apihelper.post(
-        ApiRequest(path: "/commentReplies", data: {"comment_id": comment_id}),
+        ApiRequest(path: "/commentReplies", data: {"comment_id": commentId}),
       );
       if (result.status == true) {
         if (result.data is List) {
@@ -94,7 +92,6 @@ class ReplyProvider extends ChangeNotifier {
     required String content,
     required BuildContext context,
   }) async {
-    context.loaderOverlay.show();
     try {
       ApiResult result = await Apihelper.post(
         ApiRequest(
@@ -124,7 +121,6 @@ class ReplyProvider extends ChangeNotifier {
       print("error $e");
       return ("error");
     }finally {
-      context.loaderOverlay.hide();
     }
   }
 
@@ -165,6 +161,7 @@ class ReplyProvider extends ChangeNotifier {
       print("error $e");
       return ("error");
     }
+    return null;
   }
 
   Future<String> deleteReply(
@@ -173,7 +170,6 @@ class ReplyProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     // id comment
-    context.loaderOverlay.show(); // show the loader overlay
     try {
       ApiResult result = await Apihelper.delete(ApiRequest(path: "/reply/$id"));
       print(result.message); // delete the comment
@@ -191,7 +187,6 @@ class ReplyProvider extends ChangeNotifier {
       print("error $e");
       return ("error");
     } finally {
-      context.loaderOverlay.hide();
       notifyListeners();
     }
   }
@@ -204,7 +199,6 @@ class ReplyProvider extends ChangeNotifier {
     }
   ) async {
     try {
-      context.loaderOverlay.show();
       ApiResult result = await Apihelper.patch(
         ApiRequest(path: "/reply/$Id", data: {"content": content}),
       );
@@ -224,7 +218,6 @@ class ReplyProvider extends ChangeNotifier {
       return ("error");
     }
     finally {
-      context.loaderOverlay.hide();
       notifyListeners();
     }
   }

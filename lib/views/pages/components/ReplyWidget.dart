@@ -34,7 +34,7 @@ class _ReplyWidgetState extends State<ReplyWidget> {
   @override
   Widget build(BuildContext context) {
   final replyProvider = Provider.of<ReplyProvider>(context, listen: false);
-  final user_id = Provider.of<Userprovider>(context, listen: false).getUser?.id;
+  final userId = Provider.of<UserProvider>(context, listen: false).getUser.id;
 
     return Selector<ReplyProvider, Reply?>(
       selector: (_, replyProvider) => replyProvider.getReply(widget.id),
@@ -55,9 +55,9 @@ class _ReplyWidgetState extends State<ReplyWidget> {
                 ): const CircleAvatar(
                   backgroundImage: AssetImage('assets/profile1.jpeg'),
                 ),
-                  title: Text(reply!.owner_name), // User name
+                  title: Text(reply.owner_name), // User name
                   subtitle: Text(reply.getTimeAgo()), // Post time
-                  trailing:user_id == reply.owner_id? IconButton(icon: Icon(Icons.more_horiz),onPressed: () => 
+                  trailing:userId == reply.owner_id? IconButton(icon: Icon(Icons.more_horiz),onPressed: () => 
                   showOptionsSheet(
                     context: context, 
                     onDelete: () => replyProvider.deleteReply(reply.id,reply.comment_id, context),

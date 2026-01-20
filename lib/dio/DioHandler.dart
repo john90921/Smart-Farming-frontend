@@ -14,18 +14,14 @@
 // }
 
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:fv2/main.dart';
 import 'package:fv2/token/TokenManager.dart';
 
 class DioHandler {
   final Dio dio;
 
   DioHandler._internal()
-    : dio = Dio(
-        BaseOptions(
-          // Use http://10.0.2.2:8000/api/v1 for Android Emulator, or your computer's IP for physical device
-          baseUrl: "http://10.0.2.2:8000/api/v1", // change to your API
+      : dio = Dio(BaseOptions(
+          baseUrl: "https://v3-gkin.onrender.com/api/v1", // change to your API
           connectTimeout: const Duration(seconds: 10),
           receiveTimeout: const Duration(seconds: 10),
           headers: {"Accept": "application/json"},

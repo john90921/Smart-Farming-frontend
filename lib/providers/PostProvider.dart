@@ -1,15 +1,18 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fv2/api/ApiHelper.dart';
 import 'package:fv2/models/Filter.dart';
 import 'package:fv2/models/Post.dart';
+import 'package:fv2/services/ImageService.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'dart:isolate';
 import 'dart:convert';
 
 class PostProvider extends ChangeNotifier {
-  
+  ImageService imageService = ImageService();
   bool isLoading = false;
   bool success = false;
   List<Post> _postList = [];
@@ -21,6 +24,12 @@ class PostProvider extends ChangeNotifier {
 
   int pages = 1;
   bool hasMore = true;
+
+  void setPostListEmpty(){
+    _postList = [];
+    notifyListeners();
+
+  }
   void setCurrentFilter(Filter? filter){
     _currentFilter = filter;
   }
@@ -40,6 +49,7 @@ class PostProvider extends ChangeNotifier {
 
   void setPostList(List<Post> value) {
     _postList = value;
+
   }
 
   void initialHomePage(){
@@ -52,6 +62,8 @@ class PostProvider extends ChangeNotifier {
     ); // reset filter to initial values
     _selectedPost = null; 
   }
+ 
+
 
   void initial() {
     hasMore= true;
@@ -100,6 +112,7 @@ class PostProvider extends ChangeNotifier {
     } catch (e) {
       return ("error");
     }
+    return null;
   }
 
   addCommentsCount(int postId) {
@@ -164,23 +177,31 @@ class PostProvider extends ChangeNotifier {
   addNewPost(
     String title,
     String content,
-    String? imagePath,
+    File? image,
     BuildContext context,
+    String? state,
+    String? city,
   ) async {
-    context.loaderOverlay.show();
     bool success = false;
     try {
       // Show loading overlay
-      print("image path: ${imagePath}");
+      print("image path: ${image?.path}");
+      if (image != null){
+        image = await imageService.compressFile(image);
+      }
       // Create form data for Dio
       FormData formData = FormData.fromMap({
         'title': title,
         'content': content,
-        if (imagePath != null)
-          'image': imagePath,
+        if (image != null)
+          'image': await MultipartFile.fromFile(image.path, filename: image.path.split('/').last),
+        if (state != null)
+         'state': state,
+        if (city != null)
+          'city': city,
       });
       print("form data: $formData");
-      print("Sending new post to API ... ${formData}");
+      print("Sending new post to API ... $formData");
 
       // Send POST request
       ApiResult result = await Apihelper.post(
@@ -206,7 +227,6 @@ class PostProvider extends ChangeNotifier {
     } catch (e) {
       print("error $e");
     }
-    context.loaderOverlay.hide();
     if(success == true){
     return "success added post";
     }
@@ -222,12 +242,13 @@ class PostProvider extends ChangeNotifier {
     required String content,
     required bool isRemoveImage,
     required bool HaveUploadedImage,
-    required String? newImagePath,
+    required File? newImage,
   }) async {
-    print("edit post");
     try {
       FormData formData;
-
+      if (newImage != null){
+        newImage = await imageService.compressFile(newImage);
+      }
       formData = FormData.fromMap({
         // if new image selected or delered image before, then send image field
         'title': title,
@@ -235,12 +256,11 @@ class PostProvider extends ChangeNotifier {
         '_method': 'PATCH',
         if (isRemoveImage == true && HaveUploadedImage == true)
           'remove_image': true,
-        if (newImagePath != null)
+        if (newImage != null)
           'image': 
-            newImagePath,
+            await MultipartFile.fromFile(newImage.path, filename: newImage.path.split('/').last),
 //new image selected
       });
-
       ApiResult result = await Apihelper.patch(
         ApiRequest(path: "/post/${post.id}", data: formData),
       );
@@ -266,6 +286,7 @@ class PostProvider extends ChangeNotifier {
       // TODO
       print("error $e");
     }
+    return null;
   }
  Future<String> reportPost(int id, BuildContext context) async {
     // id post
@@ -365,7 +386,7 @@ class PostProvider extends ChangeNotifier {
           'page': pages,
           'date': date,
           'sortBy': sortBy,
-          if(searchInput != "" && searchInput != null) 
+          if(searchInput != "") 
           'searchInput': searchInput,
           if(userId != null)
           'userId': userId,
@@ -427,7 +448,7 @@ class PostProvider extends ChangeNotifier {
       data: {
           'date': date,
           'sortBy': sortBy,
-          if(searchInput != "" && searchInput != null) 
+          if(searchInput != "") 
           'searchInput': searchInput,
           if(userId != null)
           'userId': userId,
